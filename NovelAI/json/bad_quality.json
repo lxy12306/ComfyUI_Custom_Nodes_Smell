@@ -1,0 +1,14 @@
+{
+  "nagative_prompts": {
+    "common": "worst quality,low quality,quality,lowres,worst aesthetic,blur,blurry,mosaic censoring, pixelated",
+    "bad background1":"simple background, blurry background, bokeh, scanlines",
+    "bad woman1": "extra digit,missing digit",
+    "bad woman2": "extra digit,missing digit,half-closed eyes,long neck,long body"
+  },
+  "negative_prompts_translation": {  
+    "common": "最差质量,低质量,质量,低分辨率,最差美学,模糊,模糊的,马赛克审查,像素化",  
+    "bad background1": "简单背景,模糊背景,虚化,扫描线",  
+    "bad woman1": "多余的手指,缺失的手指",  
+    "bad woman2": "多余的手指,缺失的手指,半闭的眼睛,长脖子,长身体"  
+  }  
+}
