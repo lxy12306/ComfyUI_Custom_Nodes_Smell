@@ -1,6 +1,7 @@
 {
   "prompts": {
-    "template1": "masterpiece,best quality,amazing quality,very aesthetic,absurdres,newest,very awa,crisp",
-    "template2": "masterpiece,best quality,amazing quality,very aesthetic,absurdres,newest,very awa,crisp,sharp"
+    "common1": "masterpiece,best quality,amazing quality,very aesthetic,absurdres,newest,very awa,crisp",
+    "common2": "masterpiece,best quality,amazing quality,very aesthetic,absurdres,newest,very awa,crisp,sharp",
+    "new_view1": "masterpiece, best quality, absurdres, very awa, highres, newest, year 2024, year 2023"
   }
 }

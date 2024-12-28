@@ -1,0 +1,10 @@
+{
+  "prompts": {
+    "整个人物1": "||(full body view:1.1),||(complete character appearance:1.1)",
+    "下方视角1": "||from below,||low angle view,||upward perspectiv",
+    "正面视角1": "||front view,||frontal perspective",
+    "强调腿部1": "||focusing on legs,||highlighting outfit details,||showcasing legwear",
+    "强调胸部1": "||focusing on chest,||highlighting bust,||emphasizing upper body",
+    "强调胸部2": "||focusing on chest,||showcasing cleavage,||highlighting bust,||emphasizing upper body"
+  }
+}
