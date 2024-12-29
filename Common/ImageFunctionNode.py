@@ -2,7 +2,7 @@ import torch
 from PIL import Image
 import comfy.utils
 import torchvision.transforms.functional as F
-  
+import numpy as np
 def rescale(samples, width, height, algorithm: str):
     if algorithm == "bislerp":  # convert for compatibility with old workflows
         algorithm = "bicubic"
@@ -10,6 +10,9 @@ def rescale(samples, width, height, algorithm: str):
     samples_pil: Image.Image = F.to_pil_image(samples[0].cpu()).resize((width, height), algorithm)
     samples = F.to_tensor(samples_pil).unsqueeze(0)
     return samples
+
+def pil2tensor(image):
+    return torch.from_numpy(np.array(image).astype(np.float32) / 255.0).unsqueeze(0)
 
 class ImageAndMaskConcatenationNode:  
     @classmethod  
@@ -36,7 +39,7 @@ class ImageAndMaskConcatenationNode:
     RETURN_TYPES = ("IMAGE", "MASK", "INT", "INT", "INT", "INT")  
     RETURN_NAMES = ("concatenated_image", "concatenated_mask", "concatenated_width", "concatenated_height", "x", "y")  
     FUNCTION = "concatenate_images_and_masks"  
-    CATEGORY = "Image Function"  
+    CATEGORY = "Common/Image_Function"  
     DESCRIPTION = "Concatenate two images and two masks"  
 
     def concatenate_images_and_masks(cls, image1, mask1, image2, mask2, direction, match_image_size, first_image_shape=None):  
@@ -172,11 +175,45 @@ class ImageAndMaskConcatenationNode:
         output_mask = torch.stack(results_mask, dim=0)
 
         return output_image, output_mask, concatenated_width, concatenated_height, x, y
-    
+
+class ImageBlank:
+    def __init__(self):
+        pass
+
+    @classmethod
+    def INPUT_TYPES(cls):
+        return {
+            "required": {
+                "width": ("INT", {"default": 512, "min": 8, "max": 4096, "step": 1}),
+                "height": ("INT", {"default": 512, "min": 8, "max": 4096, "step": 1}),
+                "red": ("INT", {"default": 255, "min": 0, "max": 255, "step": 1}),
+                "green": ("INT", {"default": 255, "min": 0, "max": 255, "step": 1}),
+                "blue": ("INT", {"default": 255, "min": 0, "max": 255, "step": 1}),
+            }
+        }
+    RETURN_TYPES = ("IMAGE",)
+    FUNCTION = "blank_image"
+    CATEGORY = "Common/Image_Function"  
+
+    def blank_image(self, width, height, red, green, blue):
+
+        # Ensure multiples
+        width = (width // 8) * 8
+        height = (height // 8) * 8
+
+        # Blend image
+        blank = Image.new(mode="RGB", size=(width, height),
+                          color=(red, green, blue))
+
+        return (pil2tensor(blank), )
+
+
 NODE_CLASS_MAPPINGS = {
     "ImageAndMaskConcatenationNode": ImageAndMaskConcatenationNode,
+    "ImageBlank": ImageBlank
 }
 
 NODE_DISPLAY_NAME_MAPPINGS = {
     "ImageAndMaskConcatenationNode": "Smell Image And Mask Concatenation Node",
+    "ImageBlank": "Smell Image Blank"
 }
