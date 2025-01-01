@@ -1,4 +1,5 @@
 from .common import NovelPositivePromptManager
+from .common import NovelPositivePromptCommonNode
 
 class NovelPositivePromptNode:  
     @classmethod  
@@ -19,14 +20,61 @@ class NovelPositivePromptNode:
     RETURN_TYPES = ("STRING",)  
     RETURN_NAMES = ("positive_promt",)  
     FUNCTION = "create_prompt"  
-    CATEGORY = "NovelAI"  
-    DESCRIPTION = "Create prompt strings for NovelAI"  
+    CATEGORY = "NovelAI/Positive"  
+    DESCRIPTION = "Create prompt strings for XL"  
 
     def create_prompt(self, Prefix_Quality, Prefix_Art_style, Prefix_Overall_effect, Subject, Scene_Background, Scene_Objects, Scene_Prospect, Scene_Special_effects):
         
         # 否则拼接输入字符串  
         components = [Prefix_Quality, Prefix_Art_style, Prefix_Overall_effect, Subject, Scene_Background, Scene_Objects, Scene_Prospect, Scene_Special_effects]  
         concatenated_result = ", ".join(filter(None, components))  
+        return (concatenated_result,)  
+
+class NovelT5xxlPositivePromptNode:  
+    @classmethod  
+    def INPUT_TYPES(cls):  
+        return {  
+            "required": {  
+                "Parameters": ("STRING", {"tooltip": "Quality prefix input (质量前缀)", "multiline": True}),  
+                "Subject": ("STRING", {"tooltip": "Subject input (主体：可以是人也可以是场景特效等)", "multiline": True}),  
+                "Instructions": ("STRING", {"tooltip": "Overall effect prefix input (整体效果)", "multiline": True}),  
+                "Other": ("STRING", {"tooltip": "Other", "multiline": True}),  
+            },
+        }  
+
+    RETURN_TYPES = ("STRING",)  
+    RETURN_NAMES = ("positive_promt",)  
+    FUNCTION = "create_prompt"  
+    CATEGORY = "NovelAI/Positive"  
+    DESCRIPTION = "Create prompt strings for Flux"  
+
+    def create_prompt(self, Parameters, Subject, Instructions, Other):
+        
+        # 否则拼接输入字符串  
+        concatenated_result = ""
+        if Parameters and len(Parameters) != 0:  
+            if not Parameters.endswith('.'):  
+                concatenated_result += ("Parameters: " + Parameters + ".")  
+            else:  
+                concatenated_result += ("Parameters: " + Parameters)  
+
+        if Subject and len(Subject) != 0:  
+            if not Subject.endswith('.'):  
+                concatenated_result += ("Subject: " + Subject + ".")  
+            else:  
+                concatenated_result += ("Subject: " + Subject)  
+
+        if Instructions and len(Instructions) != 0:  
+            if not Instructions.endswith('.'):  
+                concatenated_result += ("Instructions: " + Instructions + ".")  
+            else:  
+                concatenated_result += ("Instructions: " + Instructions)  
+
+        if Other and len(Other) != 0:  
+            if not Other.endswith('.'):  
+                concatenated_result += (Other + ".")  
+            else:  
+                concatenated_result += Other  
         return (concatenated_result,)  
 
 class NovelArtistTemplateSelectorNode:  
@@ -166,7 +214,7 @@ class NovelOverallEffectTemplateSelectorNode:
         print(concatenated_result)
         return (concatenated_result, concatenated_result_translation)  
 
-class NovelPositiveQualityTemplateSelectorNode:  
+class NovelPositiveQualityTemplateSelectorNode(NovelPositivePromptCommonNode):  
     @classmethod  
     def INPUT_TYPES(cls):  
         # 从已有提示词中生成下拉框选项  
@@ -174,62 +222,78 @@ class NovelPositiveQualityTemplateSelectorNode:
         prompts = cls.load_prompts()
         
         prompt_options = [(key) for key, _ in prompts.items()]  
+        prompt_options.append("None")
 
         return {  
             "required": {  
-                "selected_prompt": (sorted(prompt_options), {"tooltip": "选择的提示词"}),  
+                "user_prompt": ("STRING", {"tooltip": "添加的新提示词", "multiline": True}),
+                "use_template": ("BOOLEAN", {"default": True}),    
             },  
             "optional": {  
+                "selected_prompt1": (sorted(prompt_options), {"tooltip": "选择的提示词", "default": "None"}),  
+                "selected_prompt2": (sorted(prompt_options), {"tooltip": "选择的提示词", "default": "None"}),  
+                "selected_prompt3": (sorted(prompt_options), {"tooltip": "选择的提示词", "default": "None"}),  
+                "selected_prompt4": (sorted(prompt_options), {"tooltip": "选择的提示词", "default": "None"}),  
+                "selected_prompt5": (sorted(prompt_options), {"tooltip": "选择的提示词", "default": "None"}), 
+                "new_prompt_title": ("STRING", {"tooltip": "新提示词的标题"}),  
+                "new_prompt": ("STRING", {"tooltip": "添加的新提示词", "multiline": True}),  
+            },   
+        }  
+
+    RETURN_TYPES = ("STRING","STRING")  
+    RETURN_NAMES = ("current_prompt","current_prompts_translation")  
+    FUNCTION = "process_prompts"  
+    CATEGORY = "NovelAI_Positive_Quality" 
+    OUTPUT_NODE = True 
+    DESCRIPTION = "选择和添加质量提示词"  
+
+class NovelSubjectTemplateSelectorNode(NovelPositivePromptCommonNode):  
+    @classmethod  
+    def INPUT_TYPES(cls):  
+        # 从已有提示词中生成下拉框选项  
+        cls.prompt_manager = NovelPositivePromptManager(r"subject.json")  
+        prompts = cls.load_prompts()
+        
+        prompt_options = [(key) for key, _ in prompts.items()]  
+        prompt_options.append("None")
+
+        return {  
+            "required": {  
+                "user_prompt": ("STRING", {"tooltip": "添加的新提示词", "multiline": True}),
+                "use_template": ("BOOLEAN", {"default": False}),    
+            },  
+            "optional": {  
+                "selected_prompt1": (sorted(prompt_options), {"tooltip": "选择的提示词", "default": "None"}),  
+                "selected_prompt2": (sorted(prompt_options), {"tooltip": "选择的提示词", "default": "None"}),  
+                "selected_prompt3": (sorted(prompt_options), {"tooltip": "选择的提示词", "default": "None"}),  
+                "selected_prompt4": (sorted(prompt_options), {"tooltip": "选择的提示词", "default": "None"}),  
+                "selected_prompt5": (sorted(prompt_options), {"tooltip": "选择的提示词", "default": "None"}), 
                 "new_prompt_title": ("STRING", {"tooltip": "新提示词的标题"}),  
                 "new_prompt": ("STRING", {"tooltip": "添加的新提示词", "multiline": True}),  
             },  
         }  
 
-    RETURN_TYPES = ("STRING",)  
-    RETURN_NAMES = ("current_prompt",)  
+    RETURN_TYPES = ("STRING","STRING")  
+    RETURN_NAMES = ("current_prompts","current_prompts_translation")  
     FUNCTION = "process_prompts"  
-    CATEGORY = "NovelAI"  
-    DESCRIPTION = "选择和添加提示词"  
-
-    @classmethod  
-    def load_prompts(cls):  
-        return cls.prompt_manager.load_prompts()  
-
-    @classmethod  
-    def save_prompts(cls, prompts):  
-        cls.prompt_manager.save_prompts(prompts)  
-
-    def process_prompts(self, selected_prompt, new_prompt_title=None, new_prompt=None):  
-        """处理输入并更新输出"""  
-        prompts = self.load_prompts()  
-
-        # 选择提示词  
-        current_prompt = prompts.get(selected_prompt, "无效的提示词")  
-
-        # 添加新提示词  
-        if new_prompt and new_prompt_title:  
-            # 生成新的键名  
-            new_key = new_prompt_title  # 使用用户提供的标题作为键名  
-            if new_key not in prompts:  
-                prompts[new_key] = new_prompt  
-                self.save_prompts(prompts)  
-                print(f"已添加提示词: {new_prompt}，标题: {new_prompt_title}")  
-                current_prompt = new_prompt
-            else:  
-                print(f"提示词标题 '{new_prompt_title}' 已存在。")  
-
-        return (current_prompt,)  
+    CATEGORY = "NovelAI_Positive_Subject"  
+    OUTPUT_NODE = True
+    DESCRIPTION = "选择和添加主体提示词"  
 
 NODE_CLASS_MAPPINGS = {
     "NovelPositivePromptNode": NovelPositivePromptNode,
+    "NovelT5xxlPositivePromptNode": NovelT5xxlPositivePromptNode,
     "NovelArtistTemplateSelectorNode": NovelArtistTemplateSelectorNode,
     "NovelPositiveQualityTemplateSelectorNode": NovelPositiveQualityTemplateSelectorNode,
     "NovelOverallEffectTemplateSelectorNode": NovelOverallEffectTemplateSelectorNode,
+    "NovelSubjectTemplateSelectorNode": NovelSubjectTemplateSelectorNode,
 }
 
 NODE_DISPLAY_NAME_MAPPINGS = {
     "NovelPositivePromptNode": "Smell Novel Positive Prompt",
+    "NovelT5xxlPositivePromptNode": "Smell Novel T5xxl Positive Prompt",
     "NovelArtistTemplateSelectorNode": "Smell Novel Artist TemplateSelector Node",
     "NovelPositiveQualityTemplateSelectorNode": "Smell Novel Positive Quality TemplateSelector Node",
     "NovelOverallEffectTemplateSelectorNode": "Smell Novel OverallEffect TemplateSelector Node",
+    "NovelSubjectTemplateSelectorNode": "Smell Novel Subject TemplateSelector Node",
 }

@@ -1,0 +1,22 @@
+{
+  "prompts": {
+    "common": "1girl",
+    "丰满的胸部1": "Full breasts, Chest contour, Chest curve",
+    "丰满的胸部2": "Bustier, Full breasts, Chest contour, Chest curve",
+    "罗莎莉娜": "1girl, large breasts, blonde hair, rosalina, jewelry, star earrings, off-shoulder dress, crown, bare shoulders, blue eyes, looking at viewer, long hair, star (symbol), off shoulder, upper body, hair over one eye, covered nipples, black border, collarbone, closed mouth, aqua dress",
+    "角色，魔兽，泰兰德": "1girl, tyrandewhisperwind, looking at viewer, standing, casting spell, magic, hands up, legs apart, upper body, night elf, purple skin, long pointy ears, mature female, solo, confident, light smile, forehead jewel, tiara, long hair, green hair, ponytail, glowing eyes, blue eyes, armlet, necklace, bracelet, armlet, forehead jewel, circlet, tiara, no pupils, white dress, sleeveless dress, silver trim, gem, single pauldron, curvy, large breasts, cleavage",
+    "角色，klausherbert": "1girl, klausherbert, solo, closed eyes, japanese clothes, choker, hakama, skirt, blue fire, white hair, short hair, white kimono, ofuda, closed mouth, necklace, fire, kimono, halo, jewelry, hakama skirt, hair between eyes, talisman, facing viewer, bangs, long sleeves, wide sleeves, pouch, breasts, black choker,",
+    "悲伤面部": "shatter across face,sad,blood from eyes,tomoe \\(symbol\\)",
+    "破碎镜面1": "breaking,shattered,glass,broken glass,black rose,thistles and thorns,flora,black and thick liquid,fog,blue butterfly,underlighting,strong visual impact,film lighting,(different reflection, reflection, glass shards:1.2)"
+  },
+  "prompts_translation": {
+    "common": "1女孩",
+    "丰满的胸部1": "丰满的胸部, 胸部轮廓, 胸部曲线",
+    "丰满的胸部2": "胸部更丰满, 丰满的胸部, 胸部轮廓, 胸部曲线",
+    "罗莎莉娜": "1女孩, 大胸部, 金发, 罗莎莉娜, 珠宝, 星星耳环, 一字肩裙, 皇冠, 裸露肩膀, 蓝眼睛, 注视观众, 长发, 星星（符号）, 一字肩, 上半身, 头发遮住一只眼睛, 遮盖乳头, 黑色边框, 锁骨, 闭嘴, 水绿色裙子",
+    "角色，魔兽，泰兰德": "1女孩, 泰兰德·低语风, 注视观众, 站立, 施法, 魔法, 手举起, 腿分开, 上半身, 夜精灵, 紫色皮肤, 长尖耳, 成熟女性, 单独, 自信, 微笑, 额头珠宝, 皇冠, 长发, 绿色头发, 马尾, 发光的眼睛, 蓝眼睛, 臂环, 项链, 手链, 额头珠宝, 冕, 皇冠, 无瞳孔, 白色裙子, 无袖裙子, 银色边缘, 宝石, 单肩铠甲, 曲线美, 丰满的胸部, 胸部沟壑",
+    "角色，klausherbert": "1女孩, 克劳斯·赫伯特, 单独, 闭眼, 日本服装, 项圈, 袴, 裙子, 蓝色火焰, 白发, 短发, 白色和服, 符咒, 闭嘴, 项链, 火, 和服, 光环, 珠宝, 袴裙, 头发遮住眼睛, 符咒, 面对观众, 刘海, 长袖, 宽袖, 小袋, 胸部, 黑色项圈,",
+    "悲伤面部": "面部破碎, 悲伤, 眼睛流血, 巴哈姆特 \\(符号\\)",
+    "破碎镜面1": "破碎, 碎裂, 玻璃, 破碎的玻璃, 黑玫瑰, 刺和荆棘, 植物, 黑色浓稠液体, 雾, 蓝色蝴蝶, 逆光, 强烈视觉冲击, 电影灯光, (不同的反射, 反射, 玻璃碎片:1.2)"
+  }
+}

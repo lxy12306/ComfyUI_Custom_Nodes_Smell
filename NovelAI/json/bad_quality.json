@@ -1,16 +1,28 @@
 {
   "nagative_prompts": {
-    "common": "worst quality,low quality,quality,lowres,worst aesthetic,blur,blurry,mosaic censoring, pixelated",
-    "bad background1":"simple background, blurry background, bokeh, scanlines",
-    "bad limbs1": "deformed limbs,bad anatomy,bad hands",
+    "common": "worst quality,low quality,quality,lowres,worst aesthetic,blur,blurry,mosaic censoring,pixelated",
+    "common2": "worst aesthetic,worst quality,low quality,bad quality,lowres,jpeg artifacts",
+    "common3": "sketch,lineart,dutch angle",
+    "bad background1": "simple background, blurry background, bokeh, scanlines",
+    "bad limbs1": "deformed limbs,bad anatomy,bad hands,4 fingers,6 fingers",
     "bad woman1": "extra digit,missing digit",
-    "bad woman2": "extra digit,missing digit,half-closed eyes,long neck,long body"
+    "bad woman2": "extra digit,missing digit,half-closed eyes,long neck,long body",
+    "bad woman3": "muscular",
+    "成人内容1": "nude, nsfw",
+    "3D": "3d",
+    "画面颜色灰暗": "greyscale,dull"
   },
-  "negative_prompts_translation": {  
-    "common": "最差质量,低质量,质量,低分辨率,最差美学,模糊,模糊的,马赛克遮挡,像素化",  
-    "bad background1": "简单背景,模糊背景,散景,扫描线",  
-    "bad limbs1": "畸形肢体,糟糕的解剖学,糟糕的手",  
-    "bad woman1": "多余的手指,缺失的手指",  
-    "bad woman2": "多余的手指,缺失的手指,半闭眼睛,长脖子,长身体"  
-  }  
+  "nagative_prompts_translation": {
+    "common": "最差质量,低质量,质量,低分辨率,最差美学,模糊,模糊的,马赛克遮挡,像素化",
+    "common2": "最差美学,最差质量,低质量,糟糕质量,低分辨率,jpeg伪影",
+    "common3": "素描,线条画,荷兰角度",
+    "bad background1": "简单背景,模糊背景,散景,扫描线",
+    "bad limbs1": "畸形肢体,糟糕解剖,糟糕的手,4根手指,6根手指",
+    "bad woman1": "多余的手指,缺失的手指",
+    "bad woman2": "多余的手指,缺失的手指,半闭眼睛,长脖子,长身体",
+    "bad woman3": "肌肉发达",
+    "成人内容1": "裸体,不适合工作场所",
+    "3D": "三维",
+    "画面颜色灰暗": "灰度,暗淡"
+  }
 }

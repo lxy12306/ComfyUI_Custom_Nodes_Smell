@@ -1,7 +1,22 @@
 {
   "prompts": {
-    "common1": "masterpiece,best quality,amazing quality,very aesthetic,absurdres,newest,very awa,crisp",
-    "common2": "masterpiece,best quality,amazing quality,very aesthetic,absurdres,newest,very awa,crisp,sharp",
-    "new_view1": "masterpiece, best quality, absurdres, very awa, highres, newest, year 2024, year 2023"
+    "common1": "masterpiece,best quality,amazing quality,very aesthetic,absurdres,very awa,crisp",
+    "common2": "masterpiece,best quality,amazing quality,very aesthetic,absurdres,very awa,crisp,sharp",
+    "new_view1": "newest, year 2024, year 2023",
+    "new_view2": "newest",
+    "哑光效果": "matte finish",
+    "t5xxl_common_1": "masterpiece,best quality,amazing quality,8k,very aesthetic,absurdres,cinematic quality,HDR,rich in detail,sharp detail,vibrant tones",
+    "t5xxl_common_2": "masterpiece,best quality,amazing quality,8k,very aesthetic,absurdres,cinematic quality,HDR,sharp detail,minimalist composition,vibrant tones",
+    "t5xxl_real_1": "hyper-realistic,cinematic quality,photorealistic,HDR,high-fashion editorial photography"
+  },
+  "prompts_translation": {
+    "common1": "杰作, 最佳质量, 惊人质量, 非常美观, 超高分辨率, 非常清晰, 清晰",
+    "common2": "杰作, 最佳质量, 惊人质量, 非常美观, 超高分辨率, 非常清晰, 清晰, 锐利",
+    "new_view1": "最新, 2024年, 2023年",
+    "new_view2": "最新",
+    "哑光效果": "matte finish",
+    "t5xxl_common_1": "杰作, 最佳质量, 惊人质量, 8k, 非常美观, 超高分辨率, 电影质量, HDR, 细节丰富, 清晰细节, 鲜艳色调",
+    "t5xxl_common_2": "杰作, 最佳质量, 惊人质量, 8k, 非常美观, 超高分辨率, 电影质量, HDR, 清晰细节, 极简构图, 鲜艳色调",
+    "t5xxl_real_1": "超现实主义, 电影质量, 照片级真实, HDR, 高端时尚编辑摄影"
   }
 }
