@@ -1,8 +1,14 @@
 import torch
+import os
+import json
 from PIL import Image
-import comfy.utils
+from PIL.PngImagePlugin import PngInfo
 import torchvision.transforms.functional as F
+import comfy.utils
+from comfy.cli_args import args
 import numpy as np
+import psutil
+
 def rescale(samples, width, height, algorithm: str):
     if algorithm == "bislerp":  # convert for compatibility with old workflows
         algorithm = "bicubic"
@@ -13,6 +19,26 @@ def rescale(samples, width, height, algorithm: str):
 
 def pil2tensor(image):
     return torch.from_numpy(np.array(image).astype(np.float32) / 255.0).unsqueeze(0)
+
+def is_folder_open(directory):
+    for proc in psutil.process_iter():
+        try:
+            if proc.name() == "explorer.exe":
+                if directory.lower() in [f.path.lower() for f in proc.open_files()]:
+                    return True
+        except (psutil.NoSuchProcess, psutil.AccessDenied, psutil.ZombieProcess):
+            pass
+    return False
+
+def get_next_file_path(directory, filename_prefix):
+    index = 1
+    while True:
+        padding = str(index).zfill(4)
+        file_name = f"{filename_prefix}_{padding}.png"
+        file_path = os.path.join(directory, file_name)
+        if not os.path.exists(file_path):
+            return file_path
+        index += 1
 
 class ImageAndMaskConcatenationNode:  
     @classmethod  
@@ -39,7 +65,8 @@ class ImageAndMaskConcatenationNode:
     RETURN_TYPES = ("IMAGE", "MASK", "INT", "INT", "INT", "INT")  
     RETURN_NAMES = ("concatenated_image", "concatenated_mask", "concatenated_width", "concatenated_height", "x", "y")  
     FUNCTION = "concatenate_images_and_masks"  
-    CATEGORY = "Common/Image_Function"  
+    OUTPUT_NODE = True
+    CATEGORY = "SMELL_COMMON_IMAGE_FUNCTION"  
     DESCRIPTION = "Concatenate two images and two masks"  
 
     def concatenate_images_and_masks(cls, image1, mask1, image2, mask2, direction, match_image_size, first_image_shape=None):  
@@ -193,7 +220,9 @@ class ImageBlank:
         }
     RETURN_TYPES = ("IMAGE",)
     FUNCTION = "blank_image"
-    CATEGORY = "Common/Image_Function"  
+    OUTPUT_NODE = True
+    CATEGORY = "SMELL_COMMON_IMAGE_FUNCTION"  
+    DESCRIPTION = "Generate a blank image"  
 
     def blank_image(self, width, height, red, green, blue):
 
@@ -207,13 +236,93 @@ class ImageBlank:
 
         return (pil2tensor(blank), )
 
+class ImageSaver:
+
+    def __init__(self):
+        self.compression = 4
+
+    @classmethod
+    def INPUT_TYPES(s):
+        return {
+            "required": {
+                "Images": ("IMAGE",),
+                "BaseDirectory": ("STRING", {}),
+                "FilenamePrefix1": ("STRING", {"default": "Image"}),
+                "OpenOutputDirectory": ("BOOLEAN", {"default": False}),
+            },
+            "optional": {  
+                "FilenamePrefix2": ("STRING", {"default": None}),  
+            },  
+            "hidden": {"prompt": "PROMPT", "extra_pnginfo": "EXTRA_PNGINFO"},
+        }
+
+    RETURN_TYPES = ()
+    FUNCTION = "BatchSave"
+    OUTPUT_NODE = True
+    CATEGORY = "SMELL_COMMON_IMAGE_FUNCTION"  
+    DESCRIPTION = "Batch save files to a folder"  
+
+    def BatchSave(self, Images, BaseDirectory, FilenamePrefix1, OpenOutputDirectory, FilenamePrefix2 = None, prompt=None, extra_pnginfo=None):
+        try:
+            Directory1 = BaseDirectory
+            Directory2 = os.path.join(Directory1, FilenamePrefix1)
+            Directory = Directory2
+
+            if not os.path.exists(Directory1):
+                os.makedirs(Directory1)
+            if not os.path.exists(Directory2):
+                os.makedirs(Directory2)
+
+            _FilenamePrefix1 = FilenamePrefix1
+            FilenamePrefix = _FilenamePrefix1
+
+            if not FilenamePrefix2 == None:
+                Directory3 = os.path.join(Directory2, FilenamePrefix2)
+                Directory = Directory3
+                if not os.path.exists(Directory3):
+                    os.makedirs(Directory3)
+                _FilenamePrefix2 = FilenamePrefix2
+                FilenamePrefix = f"{_FilenamePrefix1}_{_FilenamePrefix2}"
+
+            for image in Images:
+
+                image = image.cpu().numpy()
+                image = (image * 255).astype(np.uint8)
+                img = Image.fromarray(image)
+                metadata = None
+                if not args.disable_metadata:
+                    metadata = PngInfo()
+                    if prompt is not None:
+                        metadata.add_text("prompt", json.dumps(prompt))
+                    if extra_pnginfo is not None:
+                        for x in extra_pnginfo:
+                            metadata.add_text(x, json.dumps(extra_pnginfo[x]))
+
+                file_path = get_next_file_path(Directory, FilenamePrefix)
+                img.save(file_path, pnginfo=metadata, compress_level=self.compression)
+
+            if (OpenOutputDirectory):
+                try:
+                    os.system(f'explorer "{Directory}"')
+                    os.system(f'open "{Directory}"')
+                    os.system(f'xdg-open "{Directory}"')
+                except Exception as e:
+                    print(f"Error opening directory: {e}")
+
+        except Exception as e:
+            print(f"Error saving image: {e}")
+
+        return ()
+
 
 NODE_CLASS_MAPPINGS = {
     "ImageAndMaskConcatenationNode": ImageAndMaskConcatenationNode,
-    "ImageBlank": ImageBlank
+    "ImageBlank": ImageBlank,
+    "ImageSaver": ImageSaver,
 }
 
 NODE_DISPLAY_NAME_MAPPINGS = {
     "ImageAndMaskConcatenationNode": "Smell Image And Mask Concatenation Node",
-    "ImageBlank": "Smell Image Blank"
+    "ImageBlank": "Smell Image Blank",
+    "ImageSaver": "Smell Image Saver",
 }
