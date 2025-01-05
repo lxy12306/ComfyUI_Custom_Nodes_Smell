@@ -26,7 +26,7 @@ class NovelPositivePromptNode:
     def create_prompt(self, Prefix_Quality, Prefix_Art_style, Prefix_Overall_effect, Subject, Scene_Background, Scene_Objects, Scene_Prospect, Scene_Special_effects):
         
         # 否则拼接输入字符串  
-        components = [Prefix_Quality, Prefix_Art_style, Prefix_Overall_effect, Subject, Scene_Background, Scene_Objects, Scene_Prospect, Scene_Special_effects]  
+        components = [Prefix_Quality, Prefix_Overall_effect, Subject, Prefix_Art_style, Scene_Background, Scene_Objects, Scene_Prospect, Scene_Special_effects]  
         concatenated_result = ", ".join(filter(None, components))  
         return (concatenated_result,)  
 

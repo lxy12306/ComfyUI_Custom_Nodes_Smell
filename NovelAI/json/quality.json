@@ -2,9 +2,12 @@
   "prompts": {
     "common1": "masterpiece,best quality,amazing quality,very aesthetic,absurdres,very awa,crisp",
     "common2": "masterpiece,best quality,amazing quality,very aesthetic,absurdres,very awa,crisp,sharp",
+    "pony_common1": "score_9,score_8_up,score_7_up, highly detailed",
     "new_view1": "newest, year 2024, year 2023",
     "new_view2": "newest",
     "哑光效果": "matte finish",
+    "唯美": "absurdres, wet",
+    "半厚涂料": "semi-thick painting",
     "t5xxl_common_1": "masterpiece,best quality,amazing quality,8k,very aesthetic,absurdres,cinematic quality,HDR,rich in detail,sharp detail,vibrant tones",
     "t5xxl_common_2": "masterpiece,best quality,amazing quality,8k,very aesthetic,absurdres,cinematic quality,HDR,sharp detail,minimalist composition,vibrant tones",
     "t5xxl_real_1": "hyper-realistic,cinematic quality,photorealistic,HDR,high-fashion editorial photography"
