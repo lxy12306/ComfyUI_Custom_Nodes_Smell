@@ -8,7 +8,7 @@ import comfy.utils
 from comfy.cli_args import args
 import numpy as np
 import psutil
-
+import shutil
 def rescale(samples, width, height, algorithm: str):
     if algorithm == "bislerp":  # convert for compatibility with old workflows
         algorithm = "bicubic"
@@ -30,6 +30,24 @@ def is_folder_open(directory):
             pass
     return False
 
+def bakup_excessive_file(directory, filename_prefix):
+    bak_index = 0
+    while True:
+        padding = str(bak_index).zfill(4)
+        dir_name = f"bak_{padding}"
+        dir_path = os.path.join(directory, dir_name)
+        if not os.path.exists(dir_path):
+            os.makedirs(dir_path, exist_ok=True)
+            moved_files = 0
+            for existing_file in os.listdir(directory):
+                if (existing_file.startswith(filename_prefix) and
+                    existing_file.endswith('.png')):
+                    src_path = os.path.join(directory, existing_file)
+                    dst_path = os.path.join(dir_path, existing_file)
+                    shutil.move(src_path, dst_path)
+                    moved_files += 1
+            return moved_files
+        bak_index += 1
 def get_next_file_path(directory, filename_prefix):
     index = 1
     while True:
@@ -39,6 +57,9 @@ def get_next_file_path(directory, filename_prefix):
         if not os.path.exists(file_path):
             return file_path
         index += 1
+        if index > 64:
+            bakup_excessive_file(directory, filename_prefix)
+            index = 1
 
 class ImageAndMaskConcatenationNode:  
     @classmethod  
