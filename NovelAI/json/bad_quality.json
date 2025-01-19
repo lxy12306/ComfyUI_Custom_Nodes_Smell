@@ -7,7 +7,7 @@
     "bad_face": "(ugly face),(old face),(ugly teeth:1.2),imperfect eyes,(worst face details),(skewed eyes),(bad eye details),unnatural face,unnatural eyes",
     "bad background1": "simple background, blurry background, bokeh, scanlines",
     "bad limbs1": "deformed limbs,bad anatomy,bad hands,4 fingers,6 fingers",
-    "bad limbs2": "muscular,unnatural body,((extra fingers)),distorted hands,distorted fingers,deformed,bad anatomy",
+    "bad limbs2": "muscular, unnatural body, ((extra fingers)), distorted hands, distorted fingers, deformed, bad anatomy, distorted feet, ((extra toes)), misaligned toes, irregular foot shape, swollen feet, bad foot anatomy",
     "简单": "simple background",
     "错误图像": "semi-realistic,burry,noise,abs,easynegative,moir pattern,downsampling,aliasing,distortedglossy,jpeg artifacts,compression artifacts,distortion,twisted,mixed characters,symmetrical,duplicate,cloned,error,pattern,glitch,overexposed,high-contrast,bad-contrast",
     "bad woman1": "extra digit,missing digit",

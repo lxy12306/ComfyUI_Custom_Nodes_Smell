@@ -137,3 +137,55 @@ class NovelPositivePromptCommonNode:
         print(concatenated_result)
                 # Send update event
         return (concatenated_result, concatenated_result_translation)  
+    
+    def process_prompts_with_list(self, user_prompt, use_template ,selected_prompt1=None, selected_prompt2=None, selected_prompt3=None, selected_prompt4=None, selected_prompt5=None, new_prompt_title=None, new_prompt=None):  
+        """处理输入并更新输出"""  
+        prompts = self.load_prompts()  
+        prompts_translation = self.load_prompts_translation()  
+        # 选择提示词 
+        selected_prompts = [selected_prompt1, selected_prompt2, selected_prompt3, selected_prompt4, selected_prompt5]  
+        current_prompts = []
+        current_prompts_translation = []
+
+        # 遍历每个选择的提示  
+        for selected_prompt in selected_prompts:  
+            value = prompts.get(selected_prompt, None)  # 获取提示  
+
+            if value is not None:  # 检查是否非空  
+                current_prompts.append(value)   
+                value2 = prompts_translation.get(selected_prompt, None)  # 获取提示  
+                if value2 is not None:
+                    current_prompts_translation.append(value2) 
+                else :
+                    current_prompts_translation.append(value)
+        
+        print(current_prompts)
+
+        # 添加新提示词  
+        if new_prompt and new_prompt_title:  
+            # 生成新的键名  
+            new_key = new_prompt_title  # 使用用户提供的标题作为键名  
+            if new_key not in prompts:  
+                prompts[new_key] = new_prompt  
+                self.save_prompts(prompts)  
+                print(f"已添加提示词: {new_prompt}，标题: {new_prompt_title}")  
+            else:  
+                print(f"提示词标题 '{new_prompt_title}' 已存在。")  
+
+        if use_template :  
+            current_prompts.insert(0, user_prompt)  
+            current_prompts_translation.insert(0, user_prompt)  
+        else :  
+            current_prompts = [user_prompt]
+            current_prompts_translation = [user_prompt]
+        
+        cleaned_prompts = [prompt.strip()[:-1] if prompt.strip().endswith(',') else prompt.strip() for prompt in current_prompts] 
+        cleaned_prompts_translation = [prompt.strip()[:-1] if prompt.strip().endswith(',') else prompt.strip() for prompt in current_prompts_translation] 
+        return (cleaned_prompts, cleaned_prompts_translation)  
+
+def remove_trailing_comma_and_spaces(input_string):  
+    if input_string == None:
+        return None
+    ret = input_string.rstrip(', ').rstrip()  
+    print(ret)
+    return ret

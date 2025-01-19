@@ -1,0 +1,6 @@
+{
+    "prompts": {
+      "使用特殊tag描述人物": "If there is a person/character in the image you must refer to them as {name}.",
+      "不要描述人物不可修改特征": "Do NOT include information about people/characters that cannot be changed (like ethnicity, gender, etc), but do still include changeable attributes (like hair style)."
+    }
+  }

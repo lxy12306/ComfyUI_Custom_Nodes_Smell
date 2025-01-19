@@ -1,6 +1,7 @@
 {
   "prompts": {
     "整个人物1": "||(full body view:1.1),||(complete character appearance:1.1)",
+    "半身1": "||(half body view:1.1),||(complete character appearance:1.1)",
     "下方视角1": "||from below,||low angle view,||upward perspectiv",
     "正面视角1": "||front view,||frontal perspective",
     "强调腿部1": "||focusing on legs,||highlighting outfit details,||showcasing legwear",
@@ -8,17 +9,18 @@
     "强调胸部2": "||focusing on chest,||showcasing cleavage,||highlighting bust,||emphasizing upper body",
     "强调背部1": "||focusing on back,||emphasizing back definition,||accentuating back curves",
     "强调脚部1": "||focusing on Foot,||Foot Close-up Image,||Sole Close-up",
-    "侧面视角":  "||side view,||dynamic pose,||side composition"
+    "侧面视角": "||side view,||dynamic pose,||side composition",
+    "强调脸部": "||focusing on face,||emphasizing facial features,||accentuating facial expressions|| highlighting eyes"
   },
-  "prompts_translation": {  
-    "整个人物1": "||(全身视图:1.1),||(完整角色外观:1.1)",  
-    "下方视角1": "||从下方,||低角度视图,||向上视角",  
-    "正面视角1": "||正面视图,||正面透视",  
-    "强调腿部1": "||聚焦于腿部,||突出服装细节,||展示腿部穿着",  
-    "强调胸部1": "||聚焦于胸部,||突出胸部,||强调上半身",  
-    "强调胸部2": "||聚焦于胸部,||展示胸沟,||突出胸部,||强调上半身",  
-    "强调背部1": "||聚焦于背部,||强调背部线条,||突出背部曲线",  
-    "强调脚部1": "||聚焦于脚部,||脚部特写,||脚底特写",  
-    "侧面视角": "||侧面视图,||动态姿势,||侧面构图"  
-  }  
+  "prompts_translation": {
+    "整个人物1": "||(全身视图:1.1),||(完整角色外观:1.1)",
+    "下方视角1": "||从下方,||低角度视图,||向上视角",
+    "正面视角1": "||正面视图,||正面透视",
+    "强调腿部1": "||聚焦于腿部,||突出服装细节,||展示腿部穿着",
+    "强调胸部1": "||聚焦于胸部,||突出胸部,||强调上半身",
+    "强调胸部2": "||聚焦于胸部,||展示胸沟,||突出胸部,||强调上半身",
+    "强调背部1": "||聚焦于背部,||强调背部线条,||突出背部曲线",
+    "强调脚部1": "||聚焦于脚部,||脚部特写,||脚底特写",
+    "侧面视角": "||侧面视图,||动态姿势,||侧面构图"
+  }
 }
