@@ -335,15 +335,92 @@ class ImageSaver:
 
         return ()
 
+class ImageAndTagLoader:
+    def __init__(self):
+        pass
+
+    @classmethod
+    def INPUT_TYPES(s):
+        return {
+            "required": {
+                "folder": ("STRING", {"default": "None"}),
+                "prefix": ("STRING", {"default": "None"}),
+                "number": ("INT", {"default": 0}),
+            },
+        }
+
+    RETURN_TYPES = ("STRING",)
+    RETURN_NAMES = ("Tag",)
+    FUNCTION = "image_and_tag_loader"
+    OUTPUT_NODE = True
+    CATEGORY = "SMELL_COMMON_IMAGE_ADN_TAG_LOADER"  
+    DESCRIPTION = "Load image and tag"  
+
+    @classmethod
+    def image_and_tag_loader(self, folder, prefix, number):
+        number_str = str(number).zfill(8)
+        file_path = os.path.join(folder, f"{prefix}_{number_str}.txt")
+        print(file_path)
+        if os.path.exists(file_path):
+            with open(file_path, 'r') as file:
+                content = file.read()
+                return (content,)
+        else:
+            return (None,)
+
+class TagDeleteNode:
+    def __init__(self):
+        pass
+
+    @classmethod
+    def INPUT_TYPES(s):
+        return {
+            "required": {
+                "org": ("STRING", {"default": ""}),
+                "targets": ("STRING", {"default": ""}),
+                "instert_first": ("BOOLEAN", {"default": False}),  
+            }
+        }
+
+    RETURN_TYPES = ("STRING",)
+    RETURN_NAMES = ("ModifiedString",)
+    FUNCTION = "process_strings"
+    OUTPUT_NODE = True
+    CATEGORY = "SMELL_COMMON_TAG_DELETE_NODE"
+    DESCRIPTION = "Remove elements from org string if target exists in them"
+
+    @classmethod
+    def process_strings(self, org, targets, instert_first):
+        elements = [elem.strip() for elem in org.split(",")]
+        target_list = [t.strip() for t in targets.split(",")]
+        result = []
+
+        for element in elements:
+            should_keep = True
+            for target in target_list:
+                if target.lower() in element.lower():
+                    should_keep = False
+                    break
+            if should_keep:
+                result.append(element)
+
+        if instert_first:
+            result = target_list + result
+        new_string = ",".join(result)
+        return (new_string,)
 
 NODE_CLASS_MAPPINGS = {
     "ImageAndMaskConcatenationNode": ImageAndMaskConcatenationNode,
     "ImageBlank": ImageBlank,
     "ImageSaver": ImageSaver,
+    "ImageAndTagLoader": ImageAndTagLoader,
+    "TagDeleteNode": TagDeleteNode,
 }
 
 NODE_DISPLAY_NAME_MAPPINGS = {
     "ImageAndMaskConcatenationNode": "Smell Image And Mask Concatenation Node",
     "ImageBlank": "Smell Image Blank",
     "ImageSaver": "Smell Image Saver",
+    "ImageAndTagLoader": "Smell Image And Tag Loader",
+    "TagDeleteNode": "Smell Image Tag Delete Node"
 }
