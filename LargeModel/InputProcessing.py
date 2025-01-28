@@ -76,11 +76,15 @@ class LargeModelRoleSelectorNode:
     def process_roles(cls, role, user_input, old_prompt=None, new_prompt=None):
         role_str = cls.roles[role]
         if "DeleteKeyword" in role:
-            print(role)
-            print(role)
-            print(role)
-            print(role)
-            role_str = role_str.replace("subject_old", old_prompt)
+            if old_prompt is not None:
+                role_str = role_str.replace("subject_old", old_prompt)
+        elif "ReplaceKeyword" in role:
+            if old_prompt is not None and new_prompt is not None:
+                role_str = role_str.replace("subject_old", old_prompt)
+                role_str = role_str.replace("subject_new", new_prompt)
+        elif "ImageToVedio" in role:
+            if new_prompt is not None:
+                role_str = role_str.replace("action_new", new_prompt)
         example_str = cls.examples[role]
 
         promt = role_str + "# Original Text \"\"\" {} \"\"\"".format(user_input)
