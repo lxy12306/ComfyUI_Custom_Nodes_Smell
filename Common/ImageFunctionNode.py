@@ -257,6 +257,48 @@ class ImageBlank:
 
         return (pil2tensor(blank), )
 
+class ImageFill:
+    def __init__(self):
+        pass
+
+    @classmethod
+    def INPUT_TYPES(cls):
+        return {
+            "required": {
+                "image": ("IMAGE",),
+                "width": ("INT", {"default": 512, "min": 8, "max": 4096, "step": 1}),
+                "height": ("INT", {"default": 512, "min": 8, "max": 4096, "step": 1}),
+                "red": ("INT", {"default": 255, "min": 0, "max": 255, "step": 1}),
+                "green": ("INT", {"default": 255, "min": 0, "max": 255, "step": 1}),
+                "blue": ("INT", {"default": 255, "min": 0, "max": 255, "step": 1}),
+            }
+        }
+    RETURN_TYPES = ("IMAGE",)
+    FUNCTION = "fill_image"
+    OUTPUT_NODE = True
+    CATEGORY = "SMELL_COMMON_IMAGE_FUNCTION"  
+    DESCRIPTION = "Fill image" 
+
+    def fill_image(self, image, width, height, red, green, blue):
+        d1, d2, d3, d4 = image.size()
+
+        if d2 > width or d3 > height:
+            raise ValueError(f"图像尺寸超出限制，宽度限制为 {width}，当前宽度为 {d2}；高度限制为 {height}，当前高度为 {d3}。")
+
+        color_tensor = torch.tensor([red, green, blue], dtype=torch.float32)
+
+        new_image = torch.ones(
+            (d1, width, height, d4),
+            dtype=torch.float32,
+        ) * color_tensor
+
+        left = int((width - d3) / 2)
+        top = int((height - d2) / 2)
+
+        new_image[:, top:top + d2, left:left + d3, :] = image
+
+        return (new_image, )
+
 class ImageSaver:
 
     def __init__(self):
@@ -307,10 +349,9 @@ class ImageSaver:
                 FilenamePrefix = f"{_FilenamePrefix1}_{_FilenamePrefix2}"
 
             for image in Images:
-
-                image = image.cpu().numpy()
-                image = (image * 255).astype(np.uint8)
-                img = Image.fromarray(image)
+                print(image)
+                i = 255. * image.cpu().numpy()
+                img = Image.fromarray(np.clip(i, 0, 255).astype(np.uint8))
                 metadata = None
                 if not args.disable_metadata:
                     metadata = PngInfo()
@@ -413,6 +454,7 @@ class TagDeleteNode:
 NODE_CLASS_MAPPINGS = {
     "ImageAndMaskConcatenationNode": ImageAndMaskConcatenationNode,
     "ImageBlank": ImageBlank,
+    "ImageFill": ImageFill,
     "ImageSaver": ImageSaver,
     "ImageAndTagLoader": ImageAndTagLoader,
     "TagDeleteNode": TagDeleteNode,
@@ -421,6 +463,7 @@ NODE_CLASS_MAPPINGS = {
 NODE_DISPLAY_NAME_MAPPINGS = {
     "ImageAndMaskConcatenationNode": "Smell Image And Mask Concatenation Node",
     "ImageBlank": "Smell Image Blank",
+    "ImageFill": "Smell Image Fill",
     "ImageSaver": "Smell Image Saver",
     "ImageAndTagLoader": "Smell Image And Tag Loader",
     "TagDeleteNode": "Smell Image Tag Delete Node"
