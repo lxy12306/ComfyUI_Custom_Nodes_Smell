@@ -48,7 +48,7 @@ def bakup_excessive_file(directory, filename_prefix):
                     moved_files += 1
             return moved_files
         bak_index += 1
-def get_next_file_path(directory, filename_prefix):
+def get_next_file_path(directory, filename_prefix, file_max=64):
     index = 1
     while True:
         padding = str(index).zfill(4)
@@ -57,7 +57,7 @@ def get_next_file_path(directory, filename_prefix):
         if not os.path.exists(file_path):
             return file_path
         index += 1
-        if index > 64:
+        if index > file_max:
             bakup_excessive_file(directory, filename_prefix)
             index = 1
 
@@ -269,6 +269,7 @@ class ImageSaver:
                 "Images": ("IMAGE",),
                 "BaseDirectory": ("STRING", {}),
                 "FilenamePrefix1": ("STRING", {"default": "Image"}),
+                "FileMax": ("INT", {"default": 64}),
                 "OpenOutputDirectory": ("BOOLEAN", {"default": False}),
             },
             "optional": {  
@@ -283,7 +284,7 @@ class ImageSaver:
     CATEGORY = "SMELL_COMMON_IMAGE_FUNCTION"  
     DESCRIPTION = "Batch save files to a folder"  
 
-    def BatchSave(self, Images, BaseDirectory, FilenamePrefix1, OpenOutputDirectory, FilenamePrefix2 = None, prompt=None, extra_pnginfo=None):
+    def BatchSave(self, Images, BaseDirectory, FilenamePrefix1, FileMax, OpenOutputDirectory, FilenamePrefix2 = None, prompt=None, extra_pnginfo=None):
         try:
             Directory1 = BaseDirectory
             Directory2 = os.path.join(Directory1, FilenamePrefix1)
@@ -319,7 +320,7 @@ class ImageSaver:
                         for x in extra_pnginfo:
                             metadata.add_text(x, json.dumps(extra_pnginfo[x]))
 
-                file_path = get_next_file_path(Directory, FilenamePrefix)
+                file_path = get_next_file_path(Directory, FilenamePrefix, FileMax)
                 img.save(file_path, pnginfo=metadata, compress_level=self.compression)
 
             if (OpenOutputDirectory):
