@@ -282,13 +282,13 @@ class ImageFill:
     def fill_image(self, image, width, height, red, green, blue):
         d1, d2, d3, d4 = image.size()
 
-        if d2 > width or d3 > height:
+        if d3 > width or d2 > height:
             raise ValueError(f"图像尺寸超出限制，宽度限制为 {width}，当前宽度为 {d2}；高度限制为 {height}，当前高度为 {d3}。")
 
         color_tensor = torch.tensor([red, green, blue], dtype=torch.float32)
 
         new_image = torch.ones(
-            (d1, width, height, d4),
+            (d1, height, width, d4),
             dtype=torch.float32,
         ) * color_tensor
 
