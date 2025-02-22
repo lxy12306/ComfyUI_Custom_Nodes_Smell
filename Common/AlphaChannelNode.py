@@ -14,7 +14,7 @@ class AlphaChanelAdd:
 
     RETURN_TYPES = ("IMAGE",)
     FUNCTION = "node"
-    CATEGORY = "Common/Alpha"
+    CATEGORY = "🌱SmellCommon/Alpha"
 
     def node(self, images):
         batch, height, width, channels = images.shape
@@ -43,7 +43,7 @@ class AlphaChanelAddByMask:
 
     RETURN_TYPES = ("IMAGE",)
     FUNCTION = "node"
-    CATEGORY = "Common/Alpha"
+    CATEGORY = "🌱SmellCommon/Alpha"
 
     def node(self, images, mask, method):
         img_count, img_height, img_width = images[:, :, :, 0].shape
@@ -97,7 +97,7 @@ class AlphaChanelAsMask:
 
     RETURN_TYPES = ("MASK",)
     FUNCTION = "node"
-    CATEGORY = "Common/Alpha"
+    CATEGORY = "🌱SmellCommon/Alpha"
 
     def node(self, images, method):
         if images[0, 0, 0].shape[0] != 4:
@@ -125,7 +125,7 @@ class AlphaChanelRestore:
 
     RETURN_TYPES = ("IMAGE",)
     FUNCTION = "node"
-    CATEGORY = "Common/Alpha"
+    CATEGORY = "🌱SmellCommon/Alpha"
 
     def node(self, images):
         batch, height, width, channels = images.shape
@@ -154,7 +154,7 @@ class AlphaChanelRemove:
 
     RETURN_TYPES = ("IMAGE",)
     FUNCTION = "node"
-    CATEGORY = "Common/Alpha"
+    CATEGORY = "🌱SmellCommon/Alpha"
 
     def node(self, images):
         return (images[:, :, :, 0:3],)

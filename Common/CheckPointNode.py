@@ -115,7 +115,7 @@ class CheckpointLoaderWithMeta(CheckpointLoaderSimple):
     RETURN_NAMES = ("model", "clip", "vae", "From", "Description")
     FUNCTION = "load_checkpoint"
     OUTPUT_NODE = True
-    CATEGORY = "SMELL_COMMON_CHECKPOINT"  
+    CATEGORY = "🌱SmellCommon/CheckPoint"
     DESCRIPTION = "Load checkpoint model"  
 
 

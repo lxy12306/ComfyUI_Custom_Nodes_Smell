@@ -89,7 +89,7 @@ class ImageChooser(PreviewImage):
     FUNCTION = "chooser"
     OUTPUT_NODE = True
     INPUT_IS_LIST = True
-    CATEGORY = "EasyUse/Image"
+    CATEGORY = "🌱SmellCommon/ImageFunc"
 
     last_ic = {}
     @classmethod
@@ -173,7 +173,7 @@ class PreviewAndChoose(PreviewImage):
     RETURN_TYPES = ("IMAGE","LATENT","MASK","STRING","SEGS")
     RETURN_NAMES = ("images","latents","masks","selected","segs")
     FUNCTION = "func"
-    CATEGORY = "image_chooser"
+    CATEGORY = "🌱SmellCommon/ImageFunc"
     INPUT_IS_LIST=True
     OUTPUT_NODE = False
     last_ic = {}
@@ -311,7 +311,7 @@ class ImageAndMaskConcatenationNode:
     RETURN_NAMES = ("concatenated_image", "concatenated_mask", "concatenated_width", "concatenated_height", "x", "y")  
     FUNCTION = "concatenate_images_and_masks"  
     OUTPUT_NODE = True
-    CATEGORY = "SMELL_COMMON_IMAGE_FUNCTION"  
+    CATEGORY = "🌱SmellCommon/ImageFunc"
     DESCRIPTION = "Concatenate two images and two masks"  
 
     def concatenate_images_and_masks(cls, image1, mask1, image2, mask2, direction, match_image_size, first_image_shape=None):  
@@ -466,7 +466,7 @@ class ImageBlank:
     RETURN_TYPES = ("IMAGE",)
     FUNCTION = "blank_image"
     OUTPUT_NODE = True
-    CATEGORY = "SMELL_COMMON_IMAGE_FUNCTION"  
+    CATEGORY = "🌱SmellCommon/ImageFunc"
     DESCRIPTION = "Generate a blank image"  
 
     def blank_image(self, width, height, red, green, blue):
@@ -500,7 +500,7 @@ class ImageFill:
     RETURN_TYPES = ("IMAGE",)
     FUNCTION = "fill_image"
     OUTPUT_NODE = True
-    CATEGORY = "SMELL_COMMON_IMAGE_FUNCTION"  
+    CATEGORY = "🌱SmellCommon/ImageFunc"
     DESCRIPTION = "Fill image" 
 
     def fill_image(self, image, width, height, red, green, blue):
@@ -547,7 +547,7 @@ class ImageSaver:
     RETURN_TYPES = ()
     FUNCTION = "BatchSave"
     OUTPUT_NODE = True
-    CATEGORY = "SMELL_COMMON_IMAGE_FUNCTION"  
+    CATEGORY = "🌱SmellCommon/ImageFunc"  
     DESCRIPTION = "Batch save files to a folder"  
 
     def BatchSave(self, Images, BaseDirectory, FilenamePrefix1, FileMax, OpenOutputDirectory, FilenamePrefix2 = None, prompt=None, extra_pnginfo=None):
@@ -619,7 +619,7 @@ class ImageAndTagLoader:
     RETURN_NAMES = ("Tag",)
     FUNCTION = "image_and_tag_loader"
     OUTPUT_NODE = True
-    CATEGORY = "SMELL_COMMON_IMAGE_ADN_TAG_LOADER"  
+    CATEGORY = "🌱SmellCommon/ImageFunc"  
     DESCRIPTION = "Load image and tag"  
 
     @classmethod
@@ -652,7 +652,7 @@ class TagDeleteNode:
     RETURN_NAMES = ("ModifiedString",)
     FUNCTION = "process_strings"
     OUTPUT_NODE = True
-    CATEGORY = "SMELL_COMMON_TAG_DELETE_NODE"
+    CATEGORY = "🌱SmellCommon/ImageFunc"
     DESCRIPTION = "Remove elements from org string if target exists in them"
 
     @classmethod
