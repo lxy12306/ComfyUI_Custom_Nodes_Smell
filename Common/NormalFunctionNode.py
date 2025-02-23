@@ -85,7 +85,7 @@ class OverrideCLIPDevice(OverrideDevice):
         return k
 
     RETURN_TYPES = ("CLIP",)
-    TITLE = "Force/Set CLIP Device"
+    TITLE = "Smell Force/Set CLIP Device"
 
     def patch(self, clip, device):
         return self.override(clip, "cond_stage_model", torch.device(device))
@@ -98,7 +98,7 @@ class OverrideVAEDevice(OverrideDevice):
         return k
 
     RETURN_TYPES = ("VAE",)
-    TITLE = "Force/Set VAE Device"
+    TITLE = "Smell Force/Set VAE Device"
 
     def patch(self, vae, device):
         return self.override(vae, "first_stage_model", torch.device(device))
