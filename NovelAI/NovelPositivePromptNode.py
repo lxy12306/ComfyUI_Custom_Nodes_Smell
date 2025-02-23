@@ -21,7 +21,7 @@ class NovelPositivePromptNode:
     RETURN_TYPES = ("STRING",)  
     RETURN_NAMES = ("positive_promt",)  
     FUNCTION = "create_prompt"  
-    CATEGORY = "NovelAI/Positive"  
+    CATEGORY = "🌱SmellCommon/NovelAI/Positive"  
     DESCRIPTION = "Create prompt strings for XL"  
 
     def create_prompt(self, Prefix_Quality, Prefix_Art_style, Prefix_Overall_effect, Subject, Scene_Background, Scene_Objects, Scene_Prospect, Scene_Special_effects):
@@ -46,7 +46,7 @@ class NovelT5xxlPositivePromptNode:
     RETURN_TYPES = ("STRING",)  
     RETURN_NAMES = ("positive_promt",)  
     FUNCTION = "create_prompt"  
-    CATEGORY = "NovelAI/Positive"  
+    CATEGORY = "🌱SmellCommon/NovelAI/Positive"  
     DESCRIPTION = "Create prompt strings for Flux/SD3.5"  
 
     def create_prompt(self, Parameters, Subject, Instructions, Other):
@@ -95,7 +95,7 @@ class NovelRolePromptNode:
     RETURN_TYPES = ("STRING",)  
     RETURN_NAMES = ("promt",)  
     FUNCTION = "create_prompt"  
-    CATEGORY = "NovelAI/Positive"  
+    CATEGORY = "🌱SmellCommon/NovelAI/Positive"  
     DESCRIPTION = "Create prompt strings for Flux/SD3.5"  
 
     def create_prompt(self, Character_Appearance, Character_Clothing, Character_Actions, Other):
@@ -129,7 +129,7 @@ class NovelHuyuanPromptNode:
     RETURN_TYPES = ("STRING",)  
     RETURN_NAMES = ("promt",)  
     FUNCTION = "create_prompt"  
-    CATEGORY = "SMELL_NOVELAI_POSITIVE"  
+    CATEGORY = "🌱SmellCommon/NovelAI/Positive"  
     DESCRIPTION = "Create prompt strings for Hunyuan"  
 
     def create_prompt(self, Subject, Instructions, LoraTriggerWords, Other):
@@ -184,7 +184,7 @@ class NovelArtistTemplateSelectorNode:
     RETURN_TYPES = ("STRING",)  
     RETURN_NAMES = ("current_prompt",)  
     FUNCTION = "process_prompts"  
-    CATEGORY = "NovelAI"  
+    CATEGORY = "🌱SmellCommon/NovelAI/Positive"  
     DESCRIPTION = "选择和添加提示词"  
         
     @classmethod  
@@ -244,7 +244,7 @@ class NovelOverallEffectTemplateSelectorNode:
     RETURN_TYPES = ("STRING","STRING")  
     RETURN_NAMES = ("current_prompts","current_prompts_translation")  
     FUNCTION = "process_prompts"  
-    CATEGORY = "NovelAI"  
+    CATEGORY = "🌱SmellCommon/NovelAI/Positive"  
     DESCRIPTION = "选择和添加提示词"  
 
     @classmethod  
@@ -327,7 +327,7 @@ class NovelPositiveQualityTemplateSelectorNode(NovelPositivePromptCommonNode):
     RETURN_TYPES = ("STRING","STRING")  
     RETURN_NAMES = ("current_prompt","current_prompts_translation")  
     FUNCTION = "process_prompts"  
-    CATEGORY = "NovelAI_Positive_Quality" 
+    CATEGORY = "🌱SmellCommon/NovelAI/Positive"  
     OUTPUT_NODE = True 
     DESCRIPTION = "选择和添加质量提示词"  
 
@@ -360,7 +360,7 @@ class NovelSubjectTemplateSelectorNode(NovelPositivePromptCommonNode):
     RETURN_TYPES = ("STRING","STRING")  
     RETURN_NAMES = ("current_prompts","current_prompts_translation")  
     FUNCTION = "process_prompts"  
-    CATEGORY = "NovelAI_Positive_Subject"  
+    CATEGORY = "🌱SmellCommon/NovelAI/Positive"  
     OUTPUT_NODE = True
     DESCRIPTION = "选择和添加主体提示词"  
 
@@ -393,7 +393,7 @@ class NovelJoyCaptionTwoExtraOptionsNode(NovelPositivePromptCommonNode):
     RETURN_TYPES = ("Extra_Options","Extra_Options")  
     RETURN_NAMES = ("current_options","current_options_translation")  
     FUNCTION = "process_prompts_with_list"  
-    CATEGORY = "NovelAI_JoyCaptionTwo"  
+    CATEGORY = "🌱SmellCommon/NovelAI/Positive"  
     OUTPUT_NODE = True
     DESCRIPTION = "JoyCaptionTwo Additional parameters for reverse inference"  
 

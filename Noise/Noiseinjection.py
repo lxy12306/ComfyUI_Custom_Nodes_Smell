@@ -53,7 +53,7 @@ class HighresFixScaler:
 
     RETURN_TYPES = ("LATENT",)
     FUNCTION = "scale_and_encode"
-    CATEGORY = "Noise/HighresFixScaler"
+    CATEGORY = "🌱SmellCommon/Noise"
     def soft_light_blend(self, base_images, noise_image, inject_func, mask=None, opacity=15):  
         # Resize noise image to match the size of the base images  
         noise_image = noise_image.resize(base_images[0].size)  

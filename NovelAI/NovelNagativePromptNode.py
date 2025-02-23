@@ -13,7 +13,7 @@ class NovelNagativePromptNode:
     RETURN_TYPES = ("STRING",)  
     RETURN_NAMES = ("nagative_promt",)  
     FUNCTION = "create_prompt"  
-    CATEGORY = "NovelAI"  
+    CATEGORY = "🌱SmellCommon/NovelAI/Nagative"
     DESCRIPTION = "Create nagative prompt strings for NovelAI"  
 
     def create_prompt(self, quality_prefix, object):
@@ -50,7 +50,7 @@ class NovelNagativeQualityTemplateSelectorNode:
     RETURN_TYPES = ("STRING","STRING")  
     RETURN_NAMES = ("current_prompts","current_prompts_translation")  
     FUNCTION = "process_prompts"  
-    CATEGORY = "NovelAI"  
+    CATEGORY = "🌱SmellCommon/NovelAI/Nagative"  
     DESCRIPTION = "选择和添加提示词"  
 
     @classmethod  

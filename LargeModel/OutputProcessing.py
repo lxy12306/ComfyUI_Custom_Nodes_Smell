@@ -25,7 +25,7 @@ class LargeModelCleanOutput:
     RETURN_NAMES = ("ModifiedString",)
     FUNCTION = "process_strings"
     OUTPUT_NODE = True
-    CATEGORY = "SMELL_LARGE_MODEL"
+    CATEGORY = "🌱SmellCommon/LargeModel/OutputProc"
     DESCRIPTION = "清理大模型的输出"
     
     def process_strings(self, text):
