@@ -3,7 +3,7 @@
     "common": "worst quality,low quality,normal quality,bad quelity,ugly,lowres,worst aesthetic,blur,blurry,mosaic censoring,pixelated,poorly drawn",
     "common2": "worst aesthetic,worst quality,low quality,bad quality,lowres,jpeg artifacts",
     "common3": "sketch,lineart,dutch angle",
-    "pony_common": "score_6, score_5, score_4",  
+    "pony_common": "score_6, score_5, score_4",
     "bad_face": "(ugly face),(old face),(ugly teeth:1.2),imperfect eyes,(worst face details),(skewed eyes),(bad eye details),unnatural face,unnatural eyes",
     "bad background1": "simple background, blurry background, bokeh, scanlines",
     "bad limbs1": "deformed limbs,bad anatomy,bad hands,4 fingers,6 fingers",

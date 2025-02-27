@@ -109,11 +109,39 @@ class HighresFixScaler:
         # Encode with VAE
         encoded = vae.encode(blended_tensor[:, :, :, :3])
         return ({"samples": encoded},)
-    
+
+
+class Noise_CustomNoise:
+    def __init__(self, noise_latent):
+        self.seed = 0
+        self.noise_latent = noise_latent
+
+    def generate_noise(self, input_latent):
+        return self.noise_latent.detach().clone().cpu()
+
+class CustomNoise:
+    @classmethod
+    def INPUT_TYPES(s):
+        return {"required":{
+            "noise": ("LATENT",),
+            }}
+
+    RETURN_TYPES = ("NOISE",)
+    FUNCTION = "get_noise"
+    CATEGORY = "🌱SmellCommon/Noise"
+
+    def get_noise(self, noise):
+        noise_latent = noise["samples"].detach().clone()
+        std, mean = torch.std_mean(noise_latent, dim=(-2, -1), keepdim=True)
+        noise_latent = (noise_latent - mean) / std
+        return (Noise_CustomNoise(noise_latent),)
+
 NODE_CLASS_MAPPINGS = {
     "HighresFixScaler": HighresFixScaler,
+    "CustomNoise": CustomNoise,
 }
 
 NODE_DISPLAY_NAME_MAPPINGS = {
     "HighresFixScaler": "Smell HighresFixScaler",
+    "CustomNoise": "Smell CustomNoise",
 }

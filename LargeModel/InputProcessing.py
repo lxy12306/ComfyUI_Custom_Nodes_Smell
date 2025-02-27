@@ -71,7 +71,7 @@ class LargeModelRoleSelectorNode:
     RETURN_NAMES = ("system","prompt")  
     FUNCTION = "process_roles"  
     
-    CATEGORY = "🌱SmellCommon/LargeModel/InputProc" "🌱SmellLargeModel/InputProc"  
+    CATEGORY = "🌱SmellCommon/LargeModel/InputProc" 
     DESCRIPTION = "roles选择器"
 
     def process_roles(cls, role, user_input, old_prompt=None, new_prompt=None):

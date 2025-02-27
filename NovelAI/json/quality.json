@@ -1,7 +1,11 @@
 {
   "prompts": {
-    "common1": "masterpiece,best quality,amazing quality,very aesthetic,absurdres,very awa,crisp",
-    "common2": "masterpiece,best quality,amazing quality,very aesthetic,absurdres,very awa,crisp,sharp",
+    "common1": "masterpiece,best quality,amazing quality,very aesthetic,highres,absurdres,amazing quality,very awa,crisp",
+    "common2": "masterpiece,best quality,amazing quality,very aesthetic,highres,absurdres,amazing quality,very awa,crisp,sharp",
+    "detail1": "ultra-detailed, detailed illustration, detailed background",
+    "HighResolution1": "(4k,8k,Ultra HD):1.2",
+    "CG": "CG",
+    "电影感觉": "cinematic",
     "pony_common1": "score_9,score_8_up,score_7_up, highly detailed",
     "new_view1": "newest, year 2024, year 2023",
     "new_view2": "newest",
@@ -13,13 +17,20 @@
     "t5xxl_real_1": "hyper-realistic,cinematic quality,photorealistic,HDR,high-fashion editorial photography"
   },
   "prompts_translation": {
-    "common1": "杰作, 最佳质量, 惊人质量, 非常美观, 超高分辨率, 非常清晰, 清晰",
-    "common2": "杰作, 最佳质量, 惊人质量, 非常美观, 超高分辨率, 非常清晰, 清晰, 锐利",
-    "new_view1": "最新, 2024年, 2023年",
+    "common1": "杰作,最佳品质,惊人品质,极具美感,高分辨率,超高分辨率,惊人品质,very awa,清晰",
+    "common2": "杰作,最佳品质,惊人品质,极具美感,高分辨率,超高分辨率,惊人品质,very awa,清晰,锐利",
+    "detail1": "超细节,精细插图,精细背景",
+    "HighResolution1": "(4k,8k,超高清):1.2",
+    "CG": "CG",
+    "电影感觉": "电影感",
+    "pony_common1": "score_9,score_8_up,score_7_up,极致细节",
+    "new_view1": "最新,2024年,2023年",
     "new_view2": "最新",
-    "哑光效果": "matte finish",
-    "t5xxl_common_1": "杰作, 最佳质量, 惊人质量, 8k, 非常美观, 超高分辨率, 电影质量, HDR, 细节丰富, 清晰细节, 鲜艳色调",
-    "t5xxl_common_2": "杰作, 最佳质量, 惊人质量, 8k, 非常美观, 超高分辨率, 电影质量, HDR, 清晰细节, 极简构图, 鲜艳色调",
-    "t5xxl_real_1": "超现实主义, 电影质量, 照片级真实, HDR, 高端时尚编辑摄影"
+    "哑光效果": "哑光效果",
+    "唯美": "超高分辨率,湿润",
+    "半厚涂料": "半厚涂绘",
+    "t5xxl_common_1": "杰作,最佳品质,惊人品质,8k,极具美感,超高分辨率,电影品质,HDR,丰富细节,锐利细节,鲜艳色调",
+    "t5xxl_common_2": "杰作,最佳品质,惊人品质,8k,极具美感,超高分辨率,电影品质,HDR,锐利细节,极简构图,鲜艳色调",
+    "t5xxl_real_1": "超写实,电影品质,照片级写实,HDR,高端时尚编辑摄影"
   }
 }
