@@ -10,7 +10,8 @@
     "强调背部1": "||(focusing on back:1.1),||(emphasizing back definition:1.1),||(accentuating back curves:1.1)",
     "强调脚部1": "||(focusing on Foot:1.1),||(Foot Close-up Image:1.1),||(Sole Close-up:1.1)",
     "侧面视角": "||(side view:1.1),||(dynamic pose:1.1),||(side composition:1.1)",
-    "强调脸部": "||(focusing on face:1.1),||(emphasizing facial features:1.1),||(accentuating facial expressions:1.1),||(highlighting eyes:1.1)",
+    "强调脸部1": "||(focusing on face:1.1),||(emphasizing facial features:1.1),||(accentuating facial expressions:1.1),||(highlighting eyes:1.1)",
+    "强调脸部2": "||focusing on face,||emphasizing facial features,||accentuating facial expressions,||highlighting eyes",
     "光照1": "||(sharp focus:1.1),||(depth of field:1.1),||(ray tracing:1.1),||(best lighting:1.1),||(ambient occlusion:1.1),||(soft lighting:1.1),||(blum effect:1.1)",
     "光照2": "sharp focus||depth of field,||ray tracing,||best lighting,||ambient occlusion,||soft lighting,||blum effect"
   },

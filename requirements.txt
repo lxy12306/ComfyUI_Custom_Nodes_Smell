@@ -1,2 +1,3 @@
 numpy
 psutil
+ollama==0.4.7

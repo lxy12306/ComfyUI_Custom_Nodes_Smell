@@ -1,12 +1,11 @@
 import re
 
-
-def remove_think_content(text):  
+def remove_think_content(text):
     pattern = re.compile(r'\n*\s*<think>[\s\S]*?</think>\s*\n*', re.MULTILINE)
     cleaned_text, num_subs = pattern.subn('\n', text)
     return cleaned_text
 
-def remove_extra_blank_lines(text):  
+def remove_extra_blank_lines(text):
     pattern = re.compile(r'\n{3,}', re.MULTILINE)
     cleaned_text, num_subs = pattern.subn('\n\n', text)
     return cleaned_text

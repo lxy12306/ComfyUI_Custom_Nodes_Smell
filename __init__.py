@@ -20,7 +20,7 @@ from .Noise.Noiseinjection import NODE_CLASS_MAPPINGS as NODES_CLASS_NOISE_INJEC
 
 from .LargeModel.OutputProcessing import NODE_CLASS_MAPPINGS as NODES_CLASS_LARGEMODEL_OUTPUT_PROCESSING, NODE_DISPLAY_NAME_MAPPINGS as NODES_DISPLAY_LARGEMODEL_OUTPUT_PROCESSING
 from .LargeModel.InputProcessing import NODE_CLASS_MAPPINGS as NODES_CLASS_LARGEMODEL_INPUT_PROCESSING, NODE_DISPLAY_NAME_MAPPINGS as NODES_DISPLAY_LARGEMODEL_INPUT_PROCESSING
-
+from .LargeModel.Ollma import NODE_CLASS_MAPPINGS as NODES_CLASS_LARGEMODEL_OLLMA, NODE_DISPLAY_NAME_MAPPINGS as NODES_DISPLAY_LARGEMODEL_OLLMA
 
 sys.path.insert(0,os.path.dirname(os.path.realpath(__file__)))
 module_root_directory = os.path.dirname(os.path.realpath(__file__))
@@ -35,6 +35,7 @@ NODE_CLASS_MAPPINGS = {**NODES_CLASS_NOVEL_PROMPT_POSITIVE,
                        **NODES_CLASS_LOGIC,
                        **NODES_CLASS_LARGEMODEL_OUTPUT_PROCESSING,
                        **NODES_CLASS_LARGEMODEL_INPUT_PROCESSING,
+                       **NODES_CLASS_LARGEMODEL_OLLMA,
                        **NODES_CLASS_NORMALFUNCTION,
                        }
 
@@ -47,6 +48,7 @@ NODE_DISPLAY_NAME_MAPPINGS = {**NODES_DISPLAY_NOVEL_PROMPT_POSITIVE,
                               **NODES_DISPLAY_LOGIC,
                               **NODES_DISPLAY_LARGEMODEL_OUTPUT_PROCESSING,
                               **NODES_DISPLAY_LARGEMODEL_INPUT_PROCESSING,
+                              **NODES_DISPLAY_LARGEMODEL_OLLMA,
                               **NODES_DISPLAY_NORMALFUNCTION,
                               }
 
