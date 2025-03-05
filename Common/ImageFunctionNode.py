@@ -80,7 +80,7 @@ class ImageChooser(PreviewImage):
     def INPUT_TYPES(self):
         return {
         "required":{
-            "mode": (["Always pause", "Repeat last selection", "Only pause if batch", "Pass through", "Take First n", "Take Last n"], {"default": "Always Pause"}),
+            "mode": (["Always pause", "Repeat last selection", "Only pause if batch", "Pass through", "Take First n", "Take Last n"], {"default": "Always pause"}),
             "count": ("INT", { "default": 1, "min": 1, "max": 999, "step": 1 }),
         },
         "optional": {
