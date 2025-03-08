@@ -60,6 +60,7 @@ class LargeModelRoleSelectorNode:
             "required": {  
                 "role": (sorted(role_options), {"tooltip": "选择的角色"}),  
                 "user_input": ("STRING", {"tooltip": "user_input", "multiline": True}),
+                "output_limit" : ("INT", { "default": 256, "min": 1, "max": 9999999, "step": 1 }),
             },
             "optional": {  
                 "old_prompt": ("STRING", {"tooltip": "old_prompt", "multiline": True}),
@@ -74,8 +75,9 @@ class LargeModelRoleSelectorNode:
     CATEGORY = "🌱SmellCommon/LargeModel/InputProc" 
     DESCRIPTION = "roles选择器"
 
-    def process_roles(cls, role, user_input, old_prompt=None, new_prompt=None):
+    def process_roles(cls, role, user_input, output_limit, old_prompt=None, new_prompt=None):
         role_str = cls.roles[role]
+        role_str = role_str.replace("\"keyword_num\"", f"{output_limit}")
         if "DeleteKeyword" in role:
             if old_prompt is not None:
                 role_str = role_str.replace("subject_old", old_prompt)
