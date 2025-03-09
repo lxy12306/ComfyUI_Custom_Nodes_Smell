@@ -574,7 +574,7 @@ class ImageAspectRatioAdjuster:
             "2:1": (2, 1),
         }
 
-        round_to_multiple_int = 1 if round_to_multiple is None else int(round_to_multiple)
+        round_to_multiple_int = 1 if round_to_multiple == "None" else int(round_to_multiple)
         max_length = (max_length // round_to_multiple_int) * round_to_multiple_int
         # 如果不是使用常见宽高比，则合并两个字典
         if use_common:
