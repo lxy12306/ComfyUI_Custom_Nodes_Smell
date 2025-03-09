@@ -622,6 +622,7 @@ class ImageAspectRatioAdjuster:
 
         best_width = best_width * round_to_multiple_int
         best_height = best_height * round_to_multiple_int
+        max_length = max(best_width, best_height)
 
         # 返回宽度、高度和计算得到的宽高比、宽度和高度的字符串
         print(f"最佳宽高比: {best_ratio}, 宽度: {best_width}, 高度: {best_height}")
