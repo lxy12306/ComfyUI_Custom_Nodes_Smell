@@ -146,17 +146,17 @@ class ImageChooser(PreviewImage):
             my_stash['images']  = kwargs['images']
         else:
             kwargs['images']  = my_stash.get('images', None)
-            
+
         if (kwargs['images'] is None):
             return (None, None, None, "")
-        
+
         # convert list to batch
         images_in         = torch.cat(kwargs.pop('images'))
         self.batch        = len(images_in)
 
         # any other parameters shouldn't be lists any more...
         for x in kwargs: kwargs[x] = kwargs[x][0]
- 
+
         # call PreviewImage base
         ret = self.save_images(images=images_in, **kwargs)
 
@@ -226,10 +226,10 @@ class PreviewAndChoose(PreviewImage):
             kwargs['images']  = my_stash.get('images', None)
             kwargs['latents'] = my_stash.get('latents', None)
             kwargs['masks']   = my_stash.get('masks', None)
-            
+
         if (kwargs['images'] is None):
             return (None, None, None, "")
-        
+
         # convert list to batch
         images_in         = torch.cat(kwargs.pop('images')) if not DOING_SEGS else list(i[0,...] for i in kwargs.pop('images'))
         latents_in        = kwargs.pop('latents', None)
@@ -241,7 +241,7 @@ class PreviewAndChoose(PreviewImage):
 
         # any other parameters shouldn't be lists any more...
         for x in kwargs: kwargs[x] = kwargs[x][0]
- 
+
         # call PreviewImage base
         ret = self.save_images(images=images_in, **kwargs)
 
@@ -256,11 +256,11 @@ class PreviewAndChoose(PreviewImage):
         except Cancelled:
             raise InterruptProcessingException()
             #return (None, None,)
-        
-        if DOING_SEGS: 
+
+        if DOING_SEGS:
             segs_out = (segs_in[0][0], list(segs_in[0][1][i] for i in selections if i>=0) )
             return(None, None, None, None, segs_out)
-        
+
         return self.batch_up_selections(images_in=images_in, latent_samples_in=latent_samples_in, masks_in=masks_in, selections=selections, mode=mode)
 
     def tensor_bundle(self, tensor_in:torch.Tensor, picks):
@@ -269,13 +269,13 @@ class PreviewAndChoose(PreviewImage):
             return torch.cat(tuple([tensor_in[(x)%batch].unsqueeze_(0) for x in picks])).reshape([-1]+list(tensor_in.shape[1:]))
         else:
             return None
-    
+
     def latent_bundle(self, latent_samples_in:torch.Tensor, picks):
         if (latent_samples_in is not None and len(picks)):
             return { "samples" : self.tensor_bundle(latent_samples_in, picks) }
         else:
             return None
-    
+
     def batch_up_selections(self, images_in:torch.Tensor, latent_samples_in:torch.Tensor, masks_in:torch.Tensor, selections, mode):
         if (mode=="Pass through"):
             chosen = range(0, self.batch)
@@ -290,15 +290,15 @@ class PreviewAndChoose(PreviewImage):
 
         return (self.tensor_bundle(images_in, chosen), self.latent_bundle(latent_samples_in, chosen), self.tensor_bundle(masks_in, chosen), ",".join(str(x) for x in chosen), None, )
 
-class ImageAndMaskConcatenationNode:  
-    @classmethod  
-    def INPUT_TYPES(cls):  
-        return {  
-            "required": {  
-                "image1": ("IMAGE", {"tooltip": "First image input"}),  
-                "mask1": ("MASK", {"tooltip": "First mask input"}),  
-                "image2": ("IMAGE", {"tooltip": "Second image input"}),  
-                "mask2": ("MASK", {"tooltip": "Second mask input"}),  
+class ImageAndMaskConcatenationNode:
+    @classmethod
+    def INPUT_TYPES(cls):
+        return {
+            "required": {
+                "image1": ("IMAGE", {"tooltip": "First image input"}),
+                "mask1": ("MASK", {"tooltip": "First mask input"}),
+                "image2": ("IMAGE", {"tooltip": "Second image input"}),
+                "mask2": ("MASK", {"tooltip": "Second mask input"}),
                 "direction": (
                 [   'right',
                     'down',
@@ -309,35 +309,35 @@ class ImageAndMaskConcatenationNode:
                 "default": 'right'
                 }),
                 "match_image_size": ("BOOLEAN", {"default": True}),
-            },  
-        }  
+            },
+        }
 
-    RETURN_TYPES = ("IMAGE", "MASK", "INT", "INT", "INT", "INT")  
-    RETURN_NAMES = ("concatenated_image", "concatenated_mask", "concatenated_width", "concatenated_height", "x", "y")  
-    FUNCTION = "concatenate_images_and_masks"  
+    RETURN_TYPES = ("IMAGE", "MASK", "INT", "INT", "INT", "INT")
+    RETURN_NAMES = ("concatenated_image", "concatenated_mask", "concatenated_width", "concatenated_height", "x", "y")
+    FUNCTION = "concatenate_images_and_masks"
     OUTPUT_NODE = True
     CATEGORY = "🌱SmellCommon/ImageFunc"
-    DESCRIPTION = "Concatenate two images and two masks"  
+    DESCRIPTION = "Concatenate two images and two masks"
 
-    def concatenate_images_and_masks(cls, image1, mask1, image2, mask2, direction, match_image_size, first_image_shape=None):  
-        # 检查批量大小是否不同  
-        batch_size1 = image1.shape[0]  
-        batch_size2 = image2.shape[0]  
+    def concatenate_images_and_masks(cls, image1, mask1, image2, mask2, direction, match_image_size, first_image_shape=None):
+        # 检查批量大小是否不同
+        batch_size1 = image1.shape[0]
+        batch_size2 = image2.shape[0]
 
-        if batch_size1 != batch_size2:  
-            # 计算所需的重复次数  
-            max_batch_size = max(batch_size1, batch_size2)  
-            repeats1 = max_batch_size // batch_size1  
-            repeats2 = max_batch_size // batch_size2  
-            
-            # 重复图像以匹配最大的批量大小  
-            image1 = image1.repeat(repeats1, 1, 1, 1)  
-            image2 = image2.repeat(repeats2, 1, 1, 1)  
+        if batch_size1 != batch_size2:
+            # 计算所需的重复次数
+            max_batch_size = max(batch_size1, batch_size2)
+            repeats1 = max_batch_size // batch_size1
+            repeats2 = max_batch_size // batch_size2
 
-            # 重复掩膜以匹配最大的批量大小  
-            mask1 = mask1.repeat(repeats1, 1, 1, 1)  
-            mask2 = mask2.repeat(repeats2, 1, 1, 1)  
-  
+            # 重复图像以匹配最大的批量大小
+            image1 = image1.repeat(repeats1, 1, 1, 1)
+            image2 = image2.repeat(repeats2, 1, 1, 1)
+
+            # 重复掩膜以匹配最大的批量大小
+            mask1 = mask1.repeat(repeats1, 1, 1, 1)
+            mask2 = mask2.repeat(repeats2, 1, 1, 1)
+
         results_image = []
         results_mask = []
         concatenated_width = 0
@@ -361,41 +361,41 @@ class ImageAndMaskConcatenationNode:
             mask2_height = one_mask2.shape[1]
             mask2_width = one_mask2.shape[2]
 
-            # 比较 image1 和 mask1 的尺寸  
-            if image1_height != mask1_height or image1_width != mask1_width:  
-                # 创建一个与 image1 尺寸相同的 mask1，初始化为全零或其他默认值  
-                one_mask1 = torch.zeros_like(one_image1[:, :, :, 0])  # 创建一个与 image1 相同尺寸的全零掩膜  
-                print(f"警告：image1 的尺寸 ({image1_height}, {image1_width}) 与 mask1 的尺寸 ({mask1_height}, {mask1_width}) 不匹配，已创建新的掩膜。") 
+            # 比较 image1 和 mask1 的尺寸
+            if image1_height != mask1_height or image1_width != mask1_width:
+                # 创建一个与 image1 尺寸相同的 mask1，初始化为全零或其他默认值
+                one_mask1 = torch.zeros_like(one_image1[:, :, :, 0])  # 创建一个与 image1 相同尺寸的全零掩膜
+                print(f"警告：image1 的尺寸 ({image1_height}, {image1_width}) 与 mask1 的尺寸 ({mask1_height}, {mask1_width}) 不匹配，已创建新的掩膜。")
 
-            # 比较 image2 和 mask2 的尺寸  
-            if image2_height != mask2_height or image2_width != mask2_width:  
-                # 创建一个与 image1 尺寸相同的 mask1，初始化为全零或其他默认值  
-                one_mask2 = torch.zeros_like(one_image2[:, :, :, 0]) # 创建一个与 image1 相同尺寸的全零掩膜 
-                print(f"警告：image2 的尺寸 ({image2_height}, {image2_width}) 与 mask2 的尺寸 ({mask2_height}, {mask2_width}) 不匹配，已创建新的掩膜。") 
+            # 比较 image2 和 mask2 的尺寸
+            if image2_height != mask2_height or image2_width != mask2_width:
+                # 创建一个与 image1 尺寸相同的 mask1，初始化为全零或其他默认值
+                one_mask2 = torch.zeros_like(one_image2[:, :, :, 0]) # 创建一个与 image1 相同尺寸的全零掩膜
+                print(f"警告：image2 的尺寸 ({image2_height}, {image2_width}) 与 mask2 的尺寸 ({mask2_height}, {mask2_width}) 不匹配，已创建新的掩膜。")
 
-            if match_image_size:  
-                # 如果提供了 first_image_shape，则使用它；否则，默认为 image1 的形状  
-                target_shape = first_image_shape if first_image_shape is not None else one_image1.shape  
+            if match_image_size:
+                # 如果提供了 first_image_shape，则使用它；否则，默认为 image1 的形状
+                target_shape = first_image_shape if first_image_shape is not None else one_image1.shape
 
-                original_height = one_image2.shape[1]  
-                original_width = one_image2.shape[2]  
-                original_aspect_ratio = original_width / original_height  
+                original_height = one_image2.shape[1]
+                original_width = one_image2.shape[2]
+                original_aspect_ratio = original_width / original_height
 
-                if direction in ['left', 'right']:  
-                    # 匹配高度并调整宽度以保持纵横比  
-                    target_height = target_shape[1]  # B, H, W, C 格式  
-                    target_width = int(target_height * original_aspect_ratio)  
-                elif direction in ['up', 'down']:  
-                    # 匹配宽度并调整高度以保持纵横比  
-                    target_width = target_shape[2]  # B, H, W, C 格式  
-                    target_height = int(target_width / original_aspect_ratio)  
-                
-                samples = one_image2            
+                if direction in ['left', 'right']:
+                    # 匹配高度并调整宽度以保持纵横比
+                    target_height = target_shape[1]  # B, H, W, C 格式
+                    target_width = int(target_height * original_aspect_ratio)
+                elif direction in ['up', 'down']:
+                    # 匹配宽度并调整高度以保持纵横比
+                    target_width = target_shape[2]  # B, H, W, C 格式
+                    target_height = int(target_width / original_aspect_ratio)
+
+                samples = one_image2
                 samples = samples.movedim(-1, 1)
                 samples = rescale(samples, target_width, target_height, "nearest")
                 samples = samples.movedim(1, -1)
                 one_image2 = samples
-        
+
                 samples = one_mask2
                 samples = samples.unsqueeze(1)
                 samples = rescale(samples, target_width, target_height, "nearest")
@@ -403,43 +403,43 @@ class ImageAndMaskConcatenationNode:
                 one_mask2 = samples
 
 
-            # 确保两个图像具有相同数量的通道  
-            channels_image1 = one_image1.shape[-1]  
-            channels_mask1 = one_mask1.shape[-1]  
-            channels_image2 = one_image2.shape[-1]  
-            channels_mask2 = one_mask2.shape[-1]  
+            # 确保两个图像具有相同数量的通道
+            channels_image1 = one_image1.shape[-1]
+            channels_mask1 = one_mask1.shape[-1]
+            channels_image2 = one_image2.shape[-1]
+            channels_mask2 = one_mask2.shape[-1]
 
-            if channels_image1 != channels_image2:  
-                if channels_image1 < channels_image2:  
-                    # 如果 image2 有 alpha 通道，则为 image1 添加 alpha 通道  
-                    alpha_channel = torch.ones((*one_image1.shape[:-1], channels_image2 - channels_image1), device=one_image1.device)  
-                    alpha_channel_mask = torch.ones((*one_mask1.shape[:-1], channels_mask2 - channels_mask1), device=one_mask1.device)  
-                    one_image1 = torch.cat((one_image1, alpha_channel), dim=-1)  
-                    one_mask1 = torch.cat((one_mask1, alpha_channel_mask), dim=-1)  
-                else:  
-                    # 如果 image1 有 alpha 通道，则为 image2 添加 alpha 通道  
-                    alpha_channel = torch.ones((*one_image2.shape[:-1], channels_image1 - channels_image2), device=one_image2.device)  
-                    alpha_channel_mask = torch.ones((*one_mask2.shape[:-1], channels_mask1 - channels_mask2), device=one_mask2.device)  
-                    one_image2 = torch.cat((one_image2, alpha_channel), dim=-1)  
-                    one_mask2 = torch.cat((one_mask2, alpha_channel_mask), dim=-1) 
+            if channels_image1 != channels_image2:
+                if channels_image1 < channels_image2:
+                    # 如果 image2 有 alpha 通道，则为 image1 添加 alpha 通道
+                    alpha_channel = torch.ones((*one_image1.shape[:-1], channels_image2 - channels_image1), device=one_image1.device)
+                    alpha_channel_mask = torch.ones((*one_mask1.shape[:-1], channels_mask2 - channels_mask1), device=one_mask1.device)
+                    one_image1 = torch.cat((one_image1, alpha_channel), dim=-1)
+                    one_mask1 = torch.cat((one_mask1, alpha_channel_mask), dim=-1)
+                else:
+                    # 如果 image1 有 alpha 通道，则为 image2 添加 alpha 通道
+                    alpha_channel = torch.ones((*one_image2.shape[:-1], channels_image1 - channels_image2), device=one_image2.device)
+                    alpha_channel_mask = torch.ones((*one_mask2.shape[:-1], channels_mask1 - channels_mask2), device=one_mask2.device)
+                    one_image2 = torch.cat((one_image2, alpha_channel), dim=-1)
+                    one_mask2 = torch.cat((one_mask2, alpha_channel_mask), dim=-1)
 
 
-            # 根据指定的方向进行拼接  
-            if direction == 'right':  
-                concatenated_image = torch.cat((one_image1, one_image2), dim=2)  # 沿宽度拼接  
-                concatenated_mask = torch.cat((one_mask1, one_mask2), dim=2)  # 沿宽度拼接  
+            # 根据指定的方向进行拼接
+            if direction == 'right':
+                concatenated_image = torch.cat((one_image1, one_image2), dim=2)  # 沿宽度拼接
+                concatenated_mask = torch.cat((one_mask1, one_mask2), dim=2)  # 沿宽度拼接
                 x = one_image1.shape[2]
-            elif direction == 'down':  
-                concatenated_image = torch.cat((one_image1, one_image2), dim=1)  # 沿高度拼接  
-                concatenated_mask = torch.cat((one_mask1, one_mask2), dim=1)  # 沿高度拼接  
+            elif direction == 'down':
+                concatenated_image = torch.cat((one_image1, one_image2), dim=1)  # 沿高度拼接
+                concatenated_mask = torch.cat((one_mask1, one_mask2), dim=1)  # 沿高度拼接
                 y = one_image1.shape[1]
-            elif direction == 'left':  
-                concatenated_image = torch.cat((one_image2, one_image1), dim=2)  # 沿宽度拼接  
-                concatenated_mask = torch.cat((one_mask2, one_mask1), dim=2)  # 沿宽度拼接  
+            elif direction == 'left':
+                concatenated_image = torch.cat((one_image2, one_image1), dim=2)  # 沿宽度拼接
+                concatenated_mask = torch.cat((one_mask2, one_mask1), dim=2)  # 沿宽度拼接
                 x = one_image2.shape[2]
-            elif direction == 'up':  
-                concatenated_image = torch.cat((one_image2, one_image1), dim=1)  # 沿高度拼接  
-                concatenated_mask = torch.cat((one_mask2, one_mask1), dim=1)  # 沿高度拼接  
+            elif direction == 'up':
+                concatenated_image = torch.cat((one_image2, one_image1), dim=1)  # 沿高度拼接
+                concatenated_mask = torch.cat((one_mask2, one_mask1), dim=1)  # 沿高度拼接
                 y = one_image2.shape[1]
 
             concatenated_height = concatenated_image.shape[1]
@@ -469,10 +469,11 @@ class ImageBlank:
             }
         }
     RETURN_TYPES = ("IMAGE",)
+    RETURN_NAMES = ("image")
     FUNCTION = "blank_image"
     OUTPUT_NODE = True
     CATEGORY = "🌱SmellCommon/ImageFunc"
-    DESCRIPTION = "Generate a blank image"  
+    DESCRIPTION = "Generate a blank image"
 
     def blank_image(self, width, height, red, green, blue):
 
@@ -503,10 +504,11 @@ class ImageFill:
             }
         }
     RETURN_TYPES = ("IMAGE",)
+    RETURN_NAMES = ("image",)
     FUNCTION = "fill_image"
     OUTPUT_NODE = True
     CATEGORY = "🌱SmellCommon/ImageFunc"
-    DESCRIPTION = "Fill image" 
+    DESCRIPTION = "Fill image"
 
     def fill_image(self, image, width, height, red, green, blue):
         d1, d2, d3, d4 = image.size()
@@ -528,6 +530,103 @@ class ImageFill:
 
         return (new_image, )
 
+class ImageAspectRatioAdjuster:
+    def __init__(self):
+        pass
+
+    @classmethod
+    def INPUT_TYPES(cls):
+        multiple_list = ['8', '16', '32', '64', '128', '256', '512', 'None']
+        return {
+            "required": {
+                "image": ("IMAGE",),
+                "max_length": ("INT", {"default": 768, "min": 1, "max": 8192, "step": 1}),
+                "round_to_multiple": (multiple_list,),
+                "use_common": ("BOOLEAN", {"default": True}),  # 选择使用常见或不常见宽高比
+            }
+        }
+
+    RETURN_TYPES = ("INT", "INT", "INT", "STRING")  # 返回宽度、高度, max_length和字符串
+    RETURN_NAMES = ("width", "height", "max_length", "ratio")
+    FUNCTION = "adjust_aspect_ratio"
+    OUTPUT_NODE = True
+    CATEGORY = "🌱SmellCommon/ImageFunc"
+    DESCRIPTION = "Adjust image to the best aspect ratio and scale to max length."
+
+    def adjust_aspect_ratio(self, image, max_length, round_to_multiple, use_common):
+        # 定义常见和不常见的宽高比
+        common_aspect_ratios = {
+            "1:1": (1, 1),
+            "3:2": (3, 2),
+            "4:3": (4, 3),
+            "16:9": (16, 9),
+            "2:3": (2, 3),
+            "3:4": (3, 4),
+        }
+
+        uncommon_aspect_ratios = {
+            "5:4": (5, 4),
+            "1.85:1": (185, 100),  # 乘以100以避免浮点数
+            "2.39:1": (239, 100),  # 乘以100以避免浮点数
+            "4:5": (4, 5),
+            "9:16": (9, 16),
+            "3:1": (3, 1),
+            "2:1": (2, 1),
+        }
+
+        round_to_multiple_int = 1 if round_to_multiple is None else int(round_to_multiple)
+        max_length = (max_length // round_to_multiple_int) * round_to_multiple_int
+        # 如果不是使用常见宽高比，则合并两个字典
+        if use_common:
+            aspect_ratios = common_aspect_ratios
+        else:
+            aspect_ratios = {**common_aspect_ratios, **uncommon_aspect_ratios}
+
+        d1, d2, d3, d4 = image.size()  # 获取输入图像的尺寸
+
+        # 确保最长边不超过 max_length
+        if d3 > d2:
+            d2 = int(max_length / d3 * d2)
+            d3 = max_length
+        else :
+            d3 = int(max_length / d2 * d3)
+            d2 = max_length
+
+        d2 = d2 // round_to_multiple_int
+        d3 = d3 // round_to_multiple_int
+        print(f"调整后高宽, 宽度: {d3}, 高度: {d2}")
+
+        best_ratio = None
+        best_width = 0
+        best_height = 0
+        max_area = 0
+
+        for ratio, (w_ratio, h_ratio) in aspect_ratios.items():
+            # 计算当前宽高比的高度和宽度
+            if d3 / w_ratio >= d2 / h_ratio:
+                new_height = d2 // h_ratio * h_ratio
+                new_width = (new_height * w_ratio) // h_ratio
+            else:
+                new_width = d3 // w_ratio * w_ratio
+                new_height = (new_width * h_ratio) // w_ratio
+
+            # 计算截取后的面积
+            area = new_width * new_height
+
+            # 更新最佳宽高比
+            if area > max_area:
+                max_area = area
+                best_ratio = ratio
+                best_width = new_width
+                best_height = new_height
+
+        best_width = best_width * round_to_multiple_int
+        best_height = best_height * round_to_multiple_int
+
+        # 返回宽度、高度和计算得到的宽高比、宽度和高度的字符串
+        print(f"最佳宽高比: {best_ratio}, 宽度: {best_width}, 高度: {best_height}")
+        return (best_width, best_height, max_length, best_ratio)
+
 class ImageSaver:
 
     def __init__(self):
@@ -543,17 +642,17 @@ class ImageSaver:
                 "FileMax": ("INT", {"default": 64}),
                 "OpenOutputDirectory": ("BOOLEAN", {"default": False}),
             },
-            "optional": {  
-                "FilenamePrefix2": ("STRING", {"default": None}),  
-            },  
+            "optional": {
+                "FilenamePrefix2": ("STRING", {"default": None}),
+            },
             "hidden": {"prompt": "PROMPT", "extra_pnginfo": "EXTRA_PNGINFO"},
         }
 
     RETURN_TYPES = ()
     FUNCTION = "BatchSave"
     OUTPUT_NODE = True
-    CATEGORY = "🌱SmellCommon/ImageFunc"  
-    DESCRIPTION = "Batch save files to a folder"  
+    CATEGORY = "🌱SmellCommon/ImageFunc"
+    DESCRIPTION = "Batch save files to a folder"
 
     def BatchSave(self, Images, BaseDirectory, FilenamePrefix1, FileMax, OpenOutputDirectory, FilenamePrefix2 = None, prompt=None, extra_pnginfo=None):
         try:
@@ -624,8 +723,8 @@ class ImageAndTagLoader:
     RETURN_NAMES = ("Tag",)
     FUNCTION = "image_and_tag_loader"
     OUTPUT_NODE = True
-    CATEGORY = "🌱SmellCommon/ImageFunc"  
-    DESCRIPTION = "Load image and tag"  
+    CATEGORY = "🌱SmellCommon/ImageFunc"
+    DESCRIPTION = "Load image and tag"
 
     @classmethod
     def image_and_tag_loader(self, folder, prefix, number):
@@ -649,7 +748,7 @@ class TagDeleteNode:
             "required": {
                 "org": ("STRING", {"default": ""}),
                 "targets": ("STRING", {"default": ""}),
-                "instert_first": ("BOOLEAN", {"default": False}),  
+                "instert_first": ("BOOLEAN", {"default": False}),
             }
         }
 
@@ -692,7 +791,7 @@ class ImageScaleByAspectRatio:
         ratio_list = ['original', 'custom', '1:1', '3:2', '4:3', '16:9', '2:3', '3:4', '9:16']
         fit_mode = ['letterbox', 'crop', 'fill']
         method_mode = ['lanczos', 'bicubic', 'hamming', 'bilinear', 'box', 'nearest']
-        multiple_list = ['8', '16', '32', '64', '128', '256', '512', 'None']
+        multiple_list = ['None', '8', '16', '32', '64', '128', '256', '512']
         scale_to_list = ['None', 'longest', 'shortest', 'width', 'height', 'total_pixel(kilo pixel)']
         return {
             "required": {
@@ -861,6 +960,7 @@ NODE_CLASS_MAPPINGS = {
     "ImageFill": ImageFill,
     "ImageSaver": ImageSaver,
     "ImageAndTagLoader": ImageAndTagLoader,
+    "ImageAspectRatioAdjuster": ImageAspectRatioAdjuster,
     "ImageScaleByAspectRatio": ImageScaleByAspectRatio,
     "TagDeleteNode": TagDeleteNode,
 }
@@ -872,6 +972,7 @@ NODE_DISPLAY_NAME_MAPPINGS = {
     "ImageFill": "Smell Image Fill",
     "ImageSaver": "Smell Image Saver",
     "ImageAndTagLoader": "Smell Image And Tag Loader",
+    "ImageAspectRatioAdjuster": "Smell Image AspectRatio Adjuster",
     "ImageScaleByAspectRatio": "Smell Image Scale By AspectRatio",
     "TagDeleteNode": "Smell Image Tag Delete Node"
 }
