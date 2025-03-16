@@ -296,9 +296,7 @@ class ImageAndMaskConcatenationNode:
         return {
             "required": {
                 "image1": ("IMAGE", {"tooltip": "First image input"}),
-                "mask1": ("MASK", {"tooltip": "First mask input"}),
                 "image2": ("IMAGE", {"tooltip": "Second image input"}),
-                "mask2": ("MASK", {"tooltip": "Second mask input"}),
                 "direction": (
                 [   'right',
                     'down',
@@ -310,6 +308,10 @@ class ImageAndMaskConcatenationNode:
                 }),
                 "match_image_size": ("BOOLEAN", {"default": True}),
             },
+            "optional": {
+                "mask1": ("MASK", {"tooltip": "First mask input"}),
+                "mask2": ("MASK", {"tooltip": "Second mask input"}),
+            }
         }
 
     RETURN_TYPES = ("IMAGE", "MASK", "INT", "INT", "INT", "INT")
@@ -318,25 +320,18 @@ class ImageAndMaskConcatenationNode:
     OUTPUT_NODE = True
     CATEGORY = "🌱SmellCommon/ImageFunc"
     DESCRIPTION = "Concatenate two images and two masks"
-
-    def concatenate_images_and_masks(cls, image1, mask1, image2, mask2, direction, match_image_size, first_image_shape=None):
+    def concatenate_images_and_masks(cls, image1,  image2, direction, match_image_size, mask1=None, mask2=None, first_image_shape=None):
         # 检查批量大小是否不同
         batch_size1 = image1.shape[0]
         batch_size2 = image2.shape[0]
 
+        if mask1 == None:
+            mask1 = torch.zeros_like(image1[:, :, :, 0])
+        if mask2 == None:
+            mask2 = torch.zeros_like(image2[:, :, :, 0])
+
         if batch_size1 != batch_size2:
-            # 计算所需的重复次数
-            max_batch_size = max(batch_size1, batch_size2)
-            repeats1 = max_batch_size // batch_size1
-            repeats2 = max_batch_size // batch_size2
-
-            # 重复图像以匹配最大的批量大小
-            image1 = image1.repeat(repeats1, 1, 1, 1)
-            image2 = image2.repeat(repeats2, 1, 1, 1)
-
-            # 重复掩膜以匹配最大的批量大小
-            mask1 = mask1.repeat(repeats1, 1, 1, 1)
-            mask2 = mask2.repeat(repeats2, 1, 1, 1)
+            raise ValueError(f"Batch size mismatch: image1 has {batch_size1} samples, but image2 has {batch_size2} samples. Both must have the same batch size.")
 
         results_image = []
         results_mask = []
