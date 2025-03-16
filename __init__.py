@@ -22,6 +22,8 @@ from .LargeModel.OutputProcessing import NODE_CLASS_MAPPINGS as NODES_CLASS_LARG
 from .LargeModel.InputProcessing import NODE_CLASS_MAPPINGS as NODES_CLASS_LARGEMODEL_INPUT_PROCESSING, NODE_DISPLAY_NAME_MAPPINGS as NODES_DISPLAY_LARGEMODEL_INPUT_PROCESSING
 from .LargeModel.Ollma import NODE_CLASS_MAPPINGS as NODES_CLASS_LARGEMODEL_OLLMA, NODE_DISPLAY_NAME_MAPPINGS as NODES_DISPLAY_LARGEMODEL_OLLMA
 
+from .Model.common import NODE_CLASS_MAPPINGS as NODES_CLASS_MODEL, NODE_DISPLAY_NAME_MAPPINGS as NODES_DISPLAY_MODEL
+
 sys.path.insert(0,os.path.dirname(os.path.realpath(__file__)))
 module_root_directory = os.path.dirname(os.path.realpath(__file__))
 module_js_directory = os.path.join(module_root_directory, "js")
@@ -37,6 +39,7 @@ NODE_CLASS_MAPPINGS = {**NODES_CLASS_NOVEL_PROMPT_POSITIVE,
                        **NODES_CLASS_LARGEMODEL_INPUT_PROCESSING,
                        **NODES_CLASS_LARGEMODEL_OLLMA,
                        **NODES_CLASS_NORMALFUNCTION,
+                       **NODES_CLASS_MODEL,
                        }
 
 NODE_DISPLAY_NAME_MAPPINGS = {**NODES_DISPLAY_NOVEL_PROMPT_POSITIVE,
@@ -50,6 +53,7 @@ NODE_DISPLAY_NAME_MAPPINGS = {**NODES_DISPLAY_NOVEL_PROMPT_POSITIVE,
                               **NODES_DISPLAY_LARGEMODEL_INPUT_PROCESSING,
                               **NODES_DISPLAY_LARGEMODEL_OLLMA,
                               **NODES_DISPLAY_NORMALFUNCTION,
+                              **NODES_DISPLAY_MODEL,
                               }
 
 WEB_DIRECTORY = "./js"
