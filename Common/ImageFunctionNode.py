@@ -65,10 +65,12 @@ def get_next_file_path(directory, filename_prefix, file_max=64):
     index = 1
     while True:
         padding = str(index).zfill(4)
-        file_name = f"{filename_prefix}_{padding}.png"
-        file_path = os.path.join(directory, file_name)
-        if not os.path.exists(file_path):
-            return file_path
+        image_name = f"{filename_prefix}_{padding}.png"
+        image_path = os.path.join(directory, image_name)
+        txt_name = f"{filename_prefix}_{padding}.txt"
+        txt_path = os.path.join(directory, txt_name)
+        if not os.path.exists(image_path):
+            return image_path, txt_path
         index += 1
         if index > file_max:
             bakup_excessive_file(directory, filename_prefix)
@@ -640,6 +642,7 @@ class ImageSaver:
             },
             "optional": {
                 "FilenamePrefix2": ("STRING", {"default": None}),
+                "tags": ("STRING", {"default": None}),
             },
             "hidden": {"prompt": "PROMPT", "extra_pnginfo": "EXTRA_PNGINFO"},
         }
@@ -650,7 +653,14 @@ class ImageSaver:
     CATEGORY = "🌱SmellCommon/ImageFunc"
     DESCRIPTION = "Batch save files to a folder"
 
-    def BatchSave(self, Images, BaseDirectory, FilenamePrefix1, FileMax, OpenOutputDirectory, FilenamePrefix2 = None, prompt=None, extra_pnginfo=None):
+    def write_text_file(self, file, content, encoding="utf-8"):
+        try:
+            with open(file, 'w', encoding=encoding, newline='\n') as f:
+                f.write(content)
+        except OSError:
+            print(f"{file} save failed")
+
+    def BatchSave(self, Images, BaseDirectory, FilenamePrefix1, FileMax, OpenOutputDirectory,FilenamePrefix2 = None, tags = None, prompt=None, extra_pnginfo=None):
         try:
             Directory1 = BaseDirectory
             Directory2 = os.path.join(Directory1, FilenamePrefix1)
@@ -685,8 +695,10 @@ class ImageSaver:
                         for x in extra_pnginfo:
                             metadata.add_text(x, json.dumps(extra_pnginfo[x]))
 
-                file_path = get_next_file_path(Directory, FilenamePrefix, FileMax)
-                img.save(file_path, pnginfo=metadata, compress_level=self.compression)
+                image_path, txt_path = get_next_file_path(Directory, FilenamePrefix, FileMax)
+                img.save(image_path, pnginfo=metadata, compress_level=self.compression)
+                if tags != None and tags != "":
+                    self.write_text_file(txt_path, tags)
 
             if (OpenOutputDirectory):
                 try:

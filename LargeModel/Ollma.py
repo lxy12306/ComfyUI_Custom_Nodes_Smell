@@ -66,7 +66,7 @@ class OllamaVisionSimple:
             "num_predict": num_predict,
             "tfs_z": tfs_z,
         }
-    
+
         for (batch_number, image) in enumerate(images):
             # Convert tensor to numpy array
             i = 255. * image.cpu().numpy()
@@ -274,7 +274,7 @@ class OllamaConnectivity:
         }
 
         return (data,)
-    
+
 class OllamaOptionsAdvance:
 # 运行时选项说明：
 #
@@ -338,7 +338,10 @@ class OllamaOptionsAdvance:
         return {
             "required": {
                 "enable_num_ctx": ("BOOLEAN", {"default": True}),
-                "num_ctx": ("INT", {"default": 2048, "min": 0, "step": 1}),
+                "num_ctx": ("INT", {"default": 2048, "min": 0, "max": 16384, "step": 1}),
+
+                "enable_num_predict": ("BOOLEAN", {"default": False}),
+                "num_predict": ("INT", {"default": 2048, "min": 0, "max": 16384, "step": 1}),
 
                 "enable_seed": ("BOOLEAN", {"default": True}),
                 "seed": ("INT", {"default": seed, "min": 0, "max": 2 ** 31, "step": 1}),
@@ -355,12 +358,11 @@ class OllamaOptionsAdvance:
                 "enable_num_keep": ("BOOLEAN", {"default": False}),
                 "num_keep": ("INT", {"default": 2048, "min": 0, "step": 1}),
 
-                "enable_num_predict": ("BOOLEAN", {"default": False}),
-                "num_predict": ("INT", {"default": -1, "min": -2, "max": 2048, "step": 1}),
-        
+
+
                 "enable_tfs_z": ("BOOLEAN", {"default": False}),
                 "tfs_z": ("FLOAT", {"default": 1, "min": 1, "max": 1000, "step": 0.05}),
-    
+
                 "enable_typical_p": ("BOOLEAN", {"default": False}),
                 "typical_p": ("FLOAT", {"default": 1, "min": 0, "max": 1, "step": 0.05}),
 
@@ -402,7 +404,7 @@ class OllamaOptionsAdvance:
             print("---------------------------------------------------------")
 
         return (kargs,)
-    
+
 class OllamaGenerateAdvance:
     def __init__(self):
         self.saved_context = None
