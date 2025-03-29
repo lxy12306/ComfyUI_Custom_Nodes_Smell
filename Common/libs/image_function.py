@@ -1,6 +1,6 @@
 import torch
 import numpy as np
-from PIL import Image
+from PIL import Image, ImageOps
 from PIL.PngImagePlugin import PngInfo
 from typing import List
 
@@ -8,7 +8,7 @@ from typing import List
 def is_valid_mask(tensor:torch.Tensor) -> bool:
     return not bool(torch.all(tensor == 0).item())
 
-def pil2tensor(image):
+def pil2tensor(image) -> torch.Tensor:
     return torch.from_numpy(np.array(image).astype(np.float32) / 255.0).unsqueeze(0)
 
 def tensor2pil(t_image: torch.Tensor)  -> Image:
@@ -64,3 +64,16 @@ def fit_resize_image(image:Image, target_width:int, target_height:int, fit:str, 
         else:
             ret_image = image.resize((target_width, target_height), resize_sampler)
     return  ret_image
+
+
+def load_image_from_path(image_path):
+    image = Image.open(image_path)
+    image = ImageOps.exif_transpose(image)
+    image = image.convert("RGB")
+
+    if 'A' in image.getbands():
+        mask = np.array(image.getchannel('A')).astype(np.float32) / 255.0
+        mask = 1. - torch.from_numpy(mask)
+    else:
+        mask = None
+    return pil2tensor(image), mask

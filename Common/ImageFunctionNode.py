@@ -20,6 +20,7 @@ from server import PromptServer
 from .libs.function import *
 from .libs.image_chooser_server import MessageHolder, Cancelled
 from .libs.image_function import *
+from .libs.os_function import *
 from nodes import PreviewImage
 
 def rescale(samples, width, height, algorithm: str):
@@ -639,6 +640,7 @@ class ImageSaver:
                 "FilenamePrefix1": ("STRING", {"default": "Image"}),
                 "FileMax": ("INT", {"default": 64}),
                 "OpenOutputDirectory": ("BOOLEAN", {"default": False}),
+                "save_meta": ("BOOLEAN", {"default": True}),
             },
             "optional": {
                 "FilenamePrefix2": ("STRING", {"default": None}),
@@ -660,7 +662,7 @@ class ImageSaver:
         except OSError:
             print(f"{file} save failed")
 
-    def BatchSave(self, Images, BaseDirectory, FilenamePrefix1, FileMax, OpenOutputDirectory,FilenamePrefix2 = None, tags = None, prompt=None, extra_pnginfo=None):
+    def BatchSave(self, Images, BaseDirectory, FilenamePrefix1, FileMax, OpenOutputDirectory, save_meta, FilenamePrefix2 = None, tags = None, prompt=None, extra_pnginfo=None):
         try:
             Directory1 = BaseDirectory
             Directory2 = os.path.join(Directory1, FilenamePrefix1)
@@ -687,7 +689,7 @@ class ImageSaver:
                 i = 255. * image.cpu().numpy()
                 img = Image.fromarray(np.clip(i, 0, 255).astype(np.uint8))
                 metadata = None
-                if not args.disable_metadata:
+                if not save_meta:
                     metadata = PngInfo()
                     if prompt is not None:
                         metadata.add_text("prompt", json.dumps(prompt))
@@ -727,6 +729,7 @@ class ImageSwitchSaver:
                 "FilenamePrefix1": ("STRING", {"default": "Image"}),
                 "FileMax": ("INT", {"default": 64}),
                 "OpenOutputDirectory": ("BOOLEAN", {"default": False}),
+                "save_meta": ("BOOLEAN", {"default": True}),
                 "switch": ("BOOLEAN", {"default": False}),
                 "switch_dir1": ("STRING", {"default": "ok"}),
                 "switch_dir2": ("STRING", {"default": "error"}),
@@ -743,14 +746,7 @@ class ImageSwitchSaver:
     CATEGORY = "🌱SmellCommon/ImageFunc"
     DESCRIPTION = "Batch save files to a folder"
 
-    def write_text_file(self, file, content, encoding="utf-8"):
-        try:
-            with open(file, 'w', encoding=encoding, newline='\n') as f:
-                f.write(content)
-        except OSError:
-            print(f"{file} save failed")
-
-    def BatchSave(self, Images, BaseDirectory, FilenamePrefix1, FileMax, OpenOutputDirectory, switch, switch_dir1, switch_dir2, tags = None, prompt=None, extra_pnginfo=None):
+    def BatchSave(self, Images, BaseDirectory, FilenamePrefix1, FileMax, OpenOutputDirectory, save_meta, switch, switch_dir1, switch_dir2, tags = None, prompt=None, extra_pnginfo=None):
         try:
             Directory1 = BaseDirectory
             Directory2 = os.path.join(Directory1, FilenamePrefix1)
@@ -780,7 +776,7 @@ class ImageSwitchSaver:
                 i = 255. * image.cpu().numpy()
                 img = Image.fromarray(np.clip(i, 0, 255).astype(np.uint8))
                 metadata = None
-                if not args.disable_metadata:
+                if not save_meta:
                     metadata = PngInfo()
                     if prompt is not None:
                         metadata.add_text("prompt", json.dumps(prompt))
@@ -791,7 +787,7 @@ class ImageSwitchSaver:
                 image_path, txt_path = get_next_file_path(Directory, FilenamePrefix, FileMax)
                 img.save(image_path, pnginfo=metadata, compress_level=self.compression)
                 if tags != None and tags != "":
-                    self.write_text_file(txt_path, tags)
+                    smell_write_text_file(txt_path, tags)
 
             if (OpenOutputDirectory):
                 smell_debug(f"OpenOutputDirectory OpenOutputDirectoryOpenOutputDirectoryOpenOutputDirectoryOpenOutputDirectoryOpenOutputDirectory {Directory}")
@@ -806,38 +802,6 @@ class ImageSwitchSaver:
             print(f"Error saving image: {e}")
 
         return ()
-class ImageAndTagLoader:
-    def __init__(self):
-        pass
-
-    @classmethod
-    def INPUT_TYPES(s):
-        return {
-            "required": {
-                "folder": ("STRING", {"default": "None"}),
-                "prefix": ("STRING", {"default": "None"}),
-                "number": ("INT", {"default": 0}),
-            },
-        }
-
-    RETURN_TYPES = ("STRING",)
-    RETURN_NAMES = ("Tag",)
-    FUNCTION = "image_and_tag_loader"
-    OUTPUT_NODE = True
-    CATEGORY = "🌱SmellCommon/ImageFunc"
-    DESCRIPTION = "Load image and tag"
-
-    @classmethod
-    def image_and_tag_loader(self, folder, prefix, number):
-        number_str = str(number).zfill(8)
-        file_path = os.path.join(folder, f"{prefix}_{number_str}.txt")
-        print(file_path)
-        if os.path.exists(file_path):
-            with open(file_path, 'r') as file:
-                content = file.read()
-                return (content,)
-        else:
-            return (None,)
 
 class ImageScaleByAspectRatio:
 
@@ -1019,7 +983,6 @@ NODE_CLASS_MAPPINGS = {
     "ImageFill": ImageFill,
     "ImageSaver": ImageSaver,
     "ImageSwitchSaver": ImageSwitchSaver,
-    "ImageAndTagLoader": ImageAndTagLoader,
     "ImageAspectRatioAdjuster": ImageAspectRatioAdjuster,
     "ImageScaleByAspectRatio": ImageScaleByAspectRatio,
 }
@@ -1031,7 +994,6 @@ NODE_DISPLAY_NAME_MAPPINGS = {
     "ImageFill": "Smell Image Fill",
     "ImageSaver": "Smell Image Saver",
     "ImageSwitchSaver": "Smell Image Saver Switch",
-    "ImageAndTagLoader": "Smell Image And Tag Loader",
     "ImageAspectRatioAdjuster": "Smell Image AspectRatio Adjuster",
     "ImageScaleByAspectRatio": "Smell Image Scale By AspectRatio",
 }
