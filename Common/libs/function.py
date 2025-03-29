@@ -1,4 +1,5 @@
 import torch
+import sys
 def clear_memory():
     import gc
     # Cleanup
@@ -13,7 +14,7 @@ class AnyType(str):
     return True
   def __ne__(self, __value: object) -> bool:
     return False
-  
+
 # 向上取整数倍
 def num_round_up_to_multiple(number: int, multiple: int) -> int:
     remainder = number % multiple
@@ -22,8 +23,7 @@ def num_round_up_to_multiple(number: int, multiple: int) -> int:
     else:
         factor = (number + multiple - 1) // multiple  # 向上取整的计算方式
         return factor * multiple
-    
-  
+
 def log(message:str, message_type:str='info'):
     name = 'LayerStyle'
 
@@ -36,3 +36,7 @@ def log(message:str, message_type:str='info'):
     else:
         message = '\033[1;33m' + message + '\033[m'
     print(f"🌱SmellCommon: {name} -> {message}")
+
+def smell_debug(*args, **kwargs):
+    print(*args, **kwargs)
+    sys.stdout.flush()

@@ -713,6 +713,99 @@ class ImageSaver:
 
         return ()
 
+class ImageSwitchSaver:
+
+    def __init__(self):
+        self.compression = 4
+
+    @classmethod
+    def INPUT_TYPES(s):
+        return {
+            "required": {
+                "Images": ("IMAGE",),
+                "BaseDirectory": ("STRING", {}),
+                "FilenamePrefix1": ("STRING", {"default": "Image"}),
+                "FileMax": ("INT", {"default": 64}),
+                "OpenOutputDirectory": ("BOOLEAN", {"default": False}),
+                "switch": ("BOOLEAN", {"default": False}),
+                "switch_dir1": ("STRING", {"default": "ok"}),
+                "switch_dir2": ("STRING", {"default": "error"}),
+            },
+            "optional": {
+                "tags": ("STRING", {"default": None}),
+            },
+            "hidden": {"prompt": "PROMPT", "extra_pnginfo": "EXTRA_PNGINFO"},
+        }
+
+    RETURN_TYPES = ()
+    FUNCTION = "BatchSave"
+    OUTPUT_NODE = True
+    CATEGORY = "🌱SmellCommon/ImageFunc"
+    DESCRIPTION = "Batch save files to a folder"
+
+    def write_text_file(self, file, content, encoding="utf-8"):
+        try:
+            with open(file, 'w', encoding=encoding, newline='\n') as f:
+                f.write(content)
+        except OSError:
+            print(f"{file} save failed")
+
+    def BatchSave(self, Images, BaseDirectory, FilenamePrefix1, FileMax, OpenOutputDirectory, switch, switch_dir1, switch_dir2, tags = None, prompt=None, extra_pnginfo=None):
+        try:
+            Directory1 = BaseDirectory
+            Directory2 = os.path.join(Directory1, FilenamePrefix1)
+            Directory = Directory2
+
+            if not os.path.exists(Directory1):
+                os.makedirs(Directory1)
+            if not os.path.exists(Directory2):
+                os.makedirs(Directory2)
+
+            _FilenamePrefix1 = FilenamePrefix1
+            FilenamePrefix = _FilenamePrefix1
+
+            FilenamePrefix2 = switch_dir1
+            if not switch:
+                FilenamePrefix2 = switch_dir2
+
+            Directory3 = os.path.join(Directory2, FilenamePrefix2)
+            Directory = Directory3
+            if not os.path.exists(Directory3):
+                os.makedirs(Directory3)
+            _FilenamePrefix2 = FilenamePrefix2
+            FilenamePrefix = f"{_FilenamePrefix1}_{_FilenamePrefix2}"
+
+            for image in Images:
+                print(image)
+                i = 255. * image.cpu().numpy()
+                img = Image.fromarray(np.clip(i, 0, 255).astype(np.uint8))
+                metadata = None
+                if not args.disable_metadata:
+                    metadata = PngInfo()
+                    if prompt is not None:
+                        metadata.add_text("prompt", json.dumps(prompt))
+                    if extra_pnginfo is not None:
+                        for x in extra_pnginfo:
+                            metadata.add_text(x, json.dumps(extra_pnginfo[x]))
+
+                image_path, txt_path = get_next_file_path(Directory, FilenamePrefix, FileMax)
+                img.save(image_path, pnginfo=metadata, compress_level=self.compression)
+                if tags != None and tags != "":
+                    self.write_text_file(txt_path, tags)
+
+            if (OpenOutputDirectory):
+                smell_debug(f"OpenOutputDirectory OpenOutputDirectoryOpenOutputDirectoryOpenOutputDirectoryOpenOutputDirectoryOpenOutputDirectory {Directory}")
+                try:
+                    os.system(f'explorer "{Directory}"')
+                    os.system(f'open "{Directory}"')
+                    os.system(f'xdg-open "{Directory}"')
+                except Exception as e:
+                    print(f"Error opening directory: {e}")
+
+        except Exception as e:
+            print(f"Error saving image: {e}")
+
+        return ()
 class ImageAndTagLoader:
     def __init__(self):
         pass
@@ -745,48 +838,6 @@ class ImageAndTagLoader:
                 return (content,)
         else:
             return (None,)
-
-class TagDeleteNode:
-    def __init__(self):
-        pass
-
-    @classmethod
-    def INPUT_TYPES(s):
-        return {
-            "required": {
-                "org": ("STRING", {"default": ""}),
-                "targets": ("STRING", {"default": ""}),
-                "instert_first": ("BOOLEAN", {"default": False}),
-            }
-        }
-
-    RETURN_TYPES = ("STRING",)
-    RETURN_NAMES = ("ModifiedString",)
-    FUNCTION = "process_strings"
-    OUTPUT_NODE = True
-    CATEGORY = "🌱SmellCommon/ImageFunc"
-    DESCRIPTION = "Remove elements from org string if target exists in them"
-
-    @classmethod
-    def process_strings(self, org, targets, instert_first):
-        elements = [elem.strip() for elem in org.split(",")]
-        target_list = [t.strip() for t in targets.split(",")]
-        result = []
-
-        for element in elements:
-            should_keep = True
-            for target in target_list:
-                if target.lower() in element.lower():
-                    should_keep = False
-                    break
-            if should_keep:
-                result.append(element)
-
-        if instert_first:
-            result = target_list + result
-        new_string = ",".join(result)
-        return (new_string,)
-
 
 class ImageScaleByAspectRatio:
 
@@ -967,10 +1018,10 @@ NODE_CLASS_MAPPINGS = {
     "ImageBlank": ImageBlank,
     "ImageFill": ImageFill,
     "ImageSaver": ImageSaver,
+    "ImageSwitchSaver": ImageSwitchSaver,
     "ImageAndTagLoader": ImageAndTagLoader,
     "ImageAspectRatioAdjuster": ImageAspectRatioAdjuster,
     "ImageScaleByAspectRatio": ImageScaleByAspectRatio,
-    "TagDeleteNode": TagDeleteNode,
 }
 
 NODE_DISPLAY_NAME_MAPPINGS = {
@@ -979,8 +1030,8 @@ NODE_DISPLAY_NAME_MAPPINGS = {
     "ImageBlank": "Smell Image Blank",
     "ImageFill": "Smell Image Fill",
     "ImageSaver": "Smell Image Saver",
+    "ImageSwitchSaver": "Smell Image Saver Switch",
     "ImageAndTagLoader": "Smell Image And Tag Loader",
     "ImageAspectRatioAdjuster": "Smell Image AspectRatio Adjuster",
     "ImageScaleByAspectRatio": "Smell Image Scale By AspectRatio",
-    "TagDeleteNode": "Smell Image Tag Delete Node"
 }
