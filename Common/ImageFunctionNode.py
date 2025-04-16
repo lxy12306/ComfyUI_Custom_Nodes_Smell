@@ -413,13 +413,11 @@ class ImageAndMaskConcatenationNode:
                     alpha_channel = torch.ones((*one_image1.shape[:-1], channels_image2 - channels_image1), device=one_image1.device)
                     alpha_channel_mask = torch.ones((*one_mask1.shape[:-1], channels_mask2 - channels_mask1), device=one_mask1.device)
                     one_image1 = torch.cat((one_image1, alpha_channel), dim=-1)
-                    one_mask1 = torch.cat((one_mask1, alpha_channel_mask), dim=-1)
                 else:
                     # 如果 image1 有 alpha 通道，则为 image2 添加 alpha 通道
                     alpha_channel = torch.ones((*one_image2.shape[:-1], channels_image1 - channels_image2), device=one_image2.device)
                     alpha_channel_mask = torch.ones((*one_mask2.shape[:-1], channels_mask1 - channels_mask2), device=one_mask2.device)
                     one_image2 = torch.cat((one_image2, alpha_channel), dim=-1)
-                    one_mask2 = torch.cat((one_mask2, alpha_channel_mask), dim=-1)
 
 
             # 根据指定的方向进行拼接

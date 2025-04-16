@@ -2,6 +2,7 @@ from .libs.function import *
 from .libs.os_function import *
 from .libs.image_function import *
 import os
+import re
 
 
 class TagFilter:
@@ -242,12 +243,44 @@ class TagSaver:
             smell_write_text_file(file_path, tag)
         return ()
 
+class StringReplace:
+    def __init__(self):
+        pass
+
+    @classmethod
+    def INPUT_TYPES(cls):
+        return {
+            "required": {
+                "Text": ("STRING", {}),
+                "Pattern": ("STRING", {}),
+                "Replace_With": ("STRING", {}),
+                "Mode": (["Strict", "RegEx"],),
+            }
+        }
+
+    RETURN_TYPES = ("STRING",)
+    RETURN_NAMES = ("TEXT",)
+    FUNCTION = "replace"
+    CATEGORY = "🌱SmellCommon/TagFunc"
+    DESCRIPTION = "String Replace"
+
+    def replace(self, Text: str, Pattern: str, Replace_With: str, Mode: str):
+        out = Text
+        Pattern = Pattern.encode().decode("unicode_escape")
+        match Mode:
+            case "Strict":
+                out = Text.replace(Pattern, Replace_With)
+            case "RegEx":
+                out = re.sub(Pattern, Replace_With, out, flags=re.MULTILINE)
+        return (out,)
+
 NODE_CLASS_MAPPINGS = {
     "TagFilter": TagFilter,
     "TagDeleteNode": TagDeleteNode,
     "TagLoader": TagLoader,
     "TagSaver": TagSaver,
     "ImageAndTagLoader": ImageAndTagLoader,
+    "StringReplace": StringReplace,
 }
 
 NODE_DISPLAY_NAME_MAPPINGS = {
@@ -256,4 +289,5 @@ NODE_DISPLAY_NAME_MAPPINGS = {
     "TagLoader": "Smell Tag Loader",
     "TagSaver": "Smell Tag Saver",
     "ImageAndTagLoader": "Smell Image And Tag Loader",
+    "StringReplace": "Smell String Replace"
 }
