@@ -85,10 +85,9 @@ app.registerExtension({
         /*
         When we get images sent back for review...
         */
-        const audio = new Audio('extensions/cg-image-picker/ding.mp3');
+
         function earlyImageHandler(event) {
             display_preview_images(event);
-            if (app.ui.settings.getSettingValue("ImageChooser.alert")) audio.play();
         }
         api.addEventListener("early-image-handler", earlyImageHandler);
 
@@ -299,7 +298,7 @@ app.registerExtension({
                     } else if (FlowState.idle() && selection==0 && nodeType?.comfyClass === "Preview Chooser Fabric") {
                         this.send_button_widget.name = "Progress with nothing selected as restart";
                     } else {
-                        this.send_button_widget.name = "";
+                        this.send_button_widget.name = "ERROR";
                     }
                 }
                 if (this.cancel_button_widget) this.cancel_button_widget.name = FlowState.running() ? "Cancel current run" : "";

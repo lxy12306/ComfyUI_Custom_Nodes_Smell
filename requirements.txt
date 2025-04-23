@@ -1,3 +1,6 @@
 numpy
 psutil
 ollama==0.4.7
+torch
+Pillow
+torchvision

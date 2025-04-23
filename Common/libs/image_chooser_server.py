@@ -1,6 +1,7 @@
 from server import PromptServer
 from aiohttp import web
 import time
+import logging
 
 class Cancelled(Exception):
     pass
@@ -43,9 +44,17 @@ class MessageHolder:
             print(f"ERROR IN IMAGE_CHOOSER - failed to parse '${message}' as ${'comma separated list of ints' if asList else 'int'}")
             return [1] if asList else 1
 
-routes = PromptServer.instance.routes
-@routes.post('/image_chooser_message')
-async def make_image_selection(request):
-    post = await request.post()
-    MessageHolder.addMessage(post.get("id"), post.get("message"))
-    return web.json_response({})
+try:
+    routes = PromptServer.instance.routes
+except AttributeError:
+    logging.warning("PromptServer.instance does not have 'routes' attribute. Routes will not be initialized.")
+    routes = None
+
+if routes is not None:
+    @routes.post('/image_chooser_message')
+    async def make_image_selection(request):
+        post = await request.post()
+        MessageHolder.addMessage(post.get("id"), post.get("message"))
+        return web.json_response({})
+else:
+    logging.warning("Routes is not initialized. '/image_chooser_message' endpoint will not be available.")

@@ -4,13 +4,13 @@ import json
 import random
 import math
 
-from comfy.cli_args import args
 from comfy.model_management import InterruptProcessingException
+from comfy.utils import common_upscale
+from nodes import PreviewImage, MAX_RESOLUTION
 
 from PIL import Image
 from PIL.PngImagePlugin import PngInfo
 import torchvision.transforms.functional as F
-import comfy.utils
 
 import numpy as np
 import psutil
@@ -21,7 +21,7 @@ from .libs.function import *
 from .libs.image_chooser_server import MessageHolder, Cancelled
 from .libs.image_function import *
 from .libs.os_function import *
-from nodes import PreviewImage
+
 
 def rescale(samples, width, height, algorithm: str):
     if algorithm == "bislerp":  # convert for compatibility with old workflows
@@ -974,6 +974,168 @@ class ImageScaleByAspectRatio:
             log(f"Error: {self.NODE_NAME} skipped, because the available image or mask is not found.", message_type='error')
             return (None, None, None, 0, 0,)
 
+class ImagePad:
+    @classmethod
+    def INPUT_TYPES(s):
+        return {"required": {
+                    "image": ("IMAGE", ),  # 输入图像
+                    "left": ("INT", {"default": 0, "min": 0, "max": MAX_RESOLUTION, "step": 1}),  # 左侧填充像素
+                    "right": ("INT", {"default": 0, "min": 0, "max": MAX_RESOLUTION, "step": 1}),  # 右侧填充像素
+                    "top": ("INT", {"default": 0, "min": 0, "max": MAX_RESOLUTION, "step": 1}),  # 顶部填充像素
+                    "bottom": ("INT", {"default": 0, "min": 0, "max": MAX_RESOLUTION, "step": 1}),  # 底部填充像素
+                    "extra_padding": ("INT", {"default": 0, "min": 0, "max": MAX_RESOLUTION, "step": 1}),  # 额外填充像素
+                    "pad_mode": (["edge", "color"], {"default": "edge", "tooltip": "填充模式：边缘色或指定颜色"}),
+                    "color": ("STRING", {"default": "0, 0, 0", "tooltip": "填充颜色，RGB值(0-255)，用逗号分隔"}),
+                  },
+                "optional": {
+                    "mask": ("MASK", ),  # 可选的输入掩码
+                    "target_width": ("INT", {"default": 512, "min": 0, "max": MAX_RESOLUTION, "step": 1, "forceInput": True}),
+                    "target_height": ("INT", {"default": 512, "min": 0, "max": MAX_RESOLUTION, "step": 1, "forceInput": True}),
+                }
+                }
+
+    RETURN_TYPES = ("IMAGE", "MASK", )
+    RETURN_NAMES = ("images", "masks",)
+    FUNCTION = "pad"
+    CATEGORY = "🌱SmellCommon/ImageFunc"
+    DESCRIPTION = "对输入图像和掩码应用自定义填充，支持边缘颜色或指定颜色填充。"
+
+    def pad(self, image, left, right, top, bottom, extra_padding, color, pad_mode, mask=None, target_width=None, target_height=None):
+        """
+        填充图像和掩码
+
+        参数:
+            image: 输入图像 [B, H, W, C]
+            left, right, top, bottom: 各方向填充像素数
+            extra_padding: 所有边额外填充像素数
+            color: 填充颜色(RGB值0-255)
+            pad_mode: 填充模式("edge"或"color")
+            mask: 可选输入掩码
+            target_width, target_height: 目标尺寸(指定时进行居中填充)
+        """
+        # 获取图像维度
+        B, H, W, C = image.shape
+
+        # 调整掩码到图像尺寸(如果提供)
+        if mask is not None:
+            BM, HM, WM = mask.shape
+            if HM != H or WM != W:
+                mask = F.interpolate(mask.unsqueeze(1), size=(H, W), mode='nearest-exact').squeeze(1)
+
+        # 解析背景色
+        bg_color = self._parse_color(color, image.dtype, image.device)
+
+        # 计算填充尺寸及位置
+        padding_info = self._calculate_padding(
+            image, W, H, target_width, target_height,
+            left, right, top, bottom, extra_padding
+        )
+        pad_left, pad_right, pad_top, pad_bottom, padded_width, padded_height = padding_info
+
+        # 创建输出图像
+        out_image = torch.zeros((B, padded_height, padded_width, C),
+                              dtype=image.dtype, device=image.device)
+
+        # 应用填充
+        self._apply_padding(
+            image, out_image, pad_mode, bg_color,
+            pad_left, pad_right, pad_top, pad_bottom
+        )
+
+        # 创建或调整掩码
+        out_masks = self._prepare_masks(
+            mask, B, H, W, padded_height, padded_width,
+            pad_left, pad_right, pad_top, pad_bottom,
+            image.dtype, image.device
+        )
+
+        return (out_image, out_masks)
+
+    def _parse_color(self, color_str, dtype, device):
+        """解析颜色字符串为RGB tensor"""
+        bg_color = [int(x.strip())/255.0 for x in color_str.split(",")]
+        if len(bg_color) == 1:
+            bg_color = bg_color * 3  # 灰度转RGB
+        return torch.tensor(bg_color, dtype=dtype, device=device)
+
+    def _calculate_padding(self, image, W, H, target_width, target_height,
+                         left, right, top, bottom, extra_padding):
+        """计算各方向填充像素数和最终尺寸"""
+        if target_width is not None and target_height is not None:
+            # 目标尺寸填充模式
+            if extra_padding > 0:
+                # 如果指定了额外填充，先缩小图像
+                image_resized = common_upscale(
+                    image.movedim(-1, 1),
+                    W - extra_padding,
+                    H - extra_padding,
+                    "lanczos", "disabled"
+                ).movedim(1, -1)
+
+                # 更新尺寸信息
+                _, H, W, _ = image_resized.shape
+
+            # 居中对齐到目标尺寸
+            padded_width = target_width
+            padded_height = target_height
+            pad_left = (padded_width - W) // 2
+            pad_right = padded_width - W - pad_left
+            pad_top = (padded_height - H) // 2
+            pad_bottom = padded_height - H - pad_top
+        else:
+            # 四边单独填充模式
+            pad_left = left + extra_padding
+            pad_right = right + extra_padding
+            pad_top = top + extra_padding
+            pad_bottom = bottom + extra_padding
+            padded_width = W + pad_left + pad_right
+            padded_height = H + pad_top + pad_bottom
+
+        return pad_left, pad_right, pad_top, pad_bottom, padded_width, padded_height
+
+    def _apply_padding(self, image, out_image, pad_mode, bg_color,
+                      pad_left, pad_right, pad_top, pad_bottom):
+        """应用指定模式的填充"""
+        B, H, W, C = image.shape
+
+        for b in range(B):
+            if pad_mode == "edge":
+                # 边缘填充模式 - 提取四边缘像素
+                top_edge = image[b, 0, :, :]
+                bottom_edge = image[b, H-1, :, :]
+                left_edge = image[b, :, 0, :]
+                right_edge = image[b, :, W-1, :]
+
+                # 用边缘颜色均值填充对应区域
+                out_image[b, :pad_top, :, :] = top_edge.mean(dim=0)
+                out_image[b, pad_top+H:, :, :] = bottom_edge.mean(dim=0)
+                out_image[b, :, :pad_left, :] = left_edge.mean(dim=0)
+                out_image[b, :, pad_left+W:, :] = right_edge.mean(dim=0)
+            else:
+                # 颜色填充模式 - 用指定颜色填充整个画布
+                out_image[b, :, :, :] = bg_color.unsqueeze(0).unsqueeze(0)
+
+            # 复制原始图像到中央位置
+            out_image[b, pad_top:pad_top+H, pad_left:pad_left+W, :] = image[b]
+
+    def _prepare_masks(self, mask, B, H, W, padded_height, padded_width,
+                      pad_left, pad_right, pad_top, pad_bottom, dtype, device):
+        """准备输出掩码"""
+        if mask is not None:
+            # 如果提供了掩码，使用相同的填充扩展它
+            out_masks = torch.nn.functional.pad(
+                mask,
+                (pad_left, pad_right, pad_top, pad_bottom),
+                mode='replicate'
+            )
+        else:
+            # 如果没有掩码，创建新掩码：填充区域为1，原图区域为0
+            out_masks = torch.ones((B, padded_height, padded_width), dtype=dtype, device=device)
+            for m in range(B):
+                out_masks[m, pad_top:pad_top+H, pad_left:pad_left+W] = 0.0
+
+        return out_masks
+
 NODE_CLASS_MAPPINGS = {
     "ImageChooser": ImageChooser,
     "ImageAndMaskConcatenationNode": ImageAndMaskConcatenationNode,
@@ -983,6 +1145,7 @@ NODE_CLASS_MAPPINGS = {
     "ImageSwitchSaver": ImageSwitchSaver,
     "ImageAspectRatioAdjuster": ImageAspectRatioAdjuster,
     "ImageScaleByAspectRatio": ImageScaleByAspectRatio,
+    "ImagePad": ImagePad,
 }
 
 NODE_DISPLAY_NAME_MAPPINGS = {
@@ -994,4 +1157,5 @@ NODE_DISPLAY_NAME_MAPPINGS = {
     "ImageSwitchSaver": "Smell Image Saver Switch",
     "ImageAspectRatioAdjuster": "Smell Image AspectRatio Adjuster",
     "ImageScaleByAspectRatio": "Smell Image Scale By AspectRatio",
+    "ImagePad": "Smell Image Pad",
 }
