@@ -4,8 +4,9 @@ import os
 class LargeModelRoleManager:  
 
     def __init__(self):  
+        self.current_file_dir = os.path.dirname(__file__)
         self.json_name = "role.json"  
-        self.json_dir = r"custom_nodes\ComfyUI_Custom_Nodes_Smell\LargeModel\json"  # 使用原始字符串  
+        self.json_dir = os.path.join(self.current_file_dir, "json")
 
     def __load_prompts(self, key):  
         """从 JSON 文件加载提示词"""  

@@ -3,8 +3,10 @@ import os
 
 class NovelNagativePromptManager:
     def __init__(self, json_name):
+        self.current_file_dir = os.path.dirname(__file__)
         self.json_name = json_name
-        self.json_dir = r"custom_nodes\ComfyUI_Custom_Nodes_Smell\NovelAI\json"  # 使用原始字符串
+        self.json_dir = os.path.join(self.current_file_dir, "json")
+        print(f"json_name: {self.json_dir}")
 
     def __load_prompts(self, key):
         """从 JSON 文件加载提示词"""
@@ -37,8 +39,10 @@ class NovelNagativePromptManager:
 class NovelPositivePromptManager:
 
     def __init__(self, json_name):
+        self.current_file_dir = os.path.dirname(__file__)
         self.json_name = json_name
-        self.json_dir = r"custom_nodes\ComfyUI_Custom_Nodes_Smell\NovelAI\json"  # 使用原始字符串
+        self.json_dir = os.path.join(self.current_file_dir, "json")
+        print(f"json_name: {self.json_dir}")
 
     def __load_prompts(self, key):
         """从 JSON 文件加载提示词"""
