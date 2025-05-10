@@ -44,38 +44,7 @@ def is_folder_open(directory):
             pass
     return False
 
-def bakup_excessive_file(directory, filename_prefix):
-    bak_index = 0
-    while True:
-        padding = str(bak_index).zfill(4)
-        dir_name = f"bak_{padding}"
-        dir_path = os.path.join(directory, dir_name)
-        if not os.path.exists(dir_path):
-            os.makedirs(dir_path, exist_ok=True)
-            moved_files = 0
-            for existing_file in os.listdir(directory):
-                if (existing_file.startswith(filename_prefix) and
-                    existing_file.endswith('.png')):
-                    src_path = os.path.join(directory, existing_file)
-                    dst_path = os.path.join(dir_path, existing_file)
-                    shutil.move(src_path, dst_path)
-                    moved_files += 1
-            return moved_files
-        bak_index += 1
-def get_next_file_path(directory, filename_prefix, file_max=64):
-    index = 1
-    while True:
-        padding = str(index).zfill(4)
-        image_name = f"{filename_prefix}_{padding}.png"
-        image_path = os.path.join(directory, image_name)
-        txt_name = f"{filename_prefix}_{padding}.txt"
-        txt_path = os.path.join(directory, txt_name)
-        if not os.path.exists(image_path):
-            return image_path, txt_path
-        index += 1
-        if index > file_max:
-            bakup_excessive_file(directory, filename_prefix)
-            index = 1
+
 
 
 class ImageChooser(PreviewImage):
@@ -695,7 +664,7 @@ class ImageSaver:
                         for x in extra_pnginfo:
                             metadata.add_text(x, json.dumps(extra_pnginfo[x]))
 
-                image_path, txt_path = get_next_file_path(Directory, FilenamePrefix, FileMax)
+                image_path, txt_path = get_next_file_path(Directory, FilenamePrefix,"png",FileMax)
                 img.save(image_path, pnginfo=metadata, compress_level=self.compression)
                 if tags != None and tags != "":
                     self.write_text_file(txt_path, tags)
