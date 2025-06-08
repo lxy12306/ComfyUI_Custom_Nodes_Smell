@@ -31,6 +31,104 @@ class NovelPositivePromptNode:
         concatenated_result = ", ".join(filter(None, components))
         return (concatenated_result,)
 
+class NovelPositivePromptShowNode:
+    @classmethod
+    def INPUT_TYPES(cls):
+        return {
+            "required": {
+                "positive_promt": ("JSON", {"tooltip": "Positive prompt input (正向提示词)"}),
+            },
+            "optional": {
+                "positive_promt_trans": ("JSON", {"tooltip": "Positive prompt trans input (正向提示词翻译)"}),
+            }
+        }
+
+    RETURN_TYPES = ("STRING","STRING")
+    RETURN_NAMES = ("show1","show2")
+    FUNCTION = "show_prompt"
+    CATEGORY = "🌱SmellCommon/NovelAI/Positive"
+    DESCRIPTION = "Show positive prompt strings"
+
+    def show_prompt(self, positive_promt, positive_promt_trans = None):
+        """
+        格式化提示词分类为带颜文字的字符串
+        :param data: 包含分类的字典
+        :return: 格式化后的字符串
+        """
+        # 定义分类对应的颜文字
+        category_emojis = {
+            "Prefix_Quality": "🌟 **Prefix_Quality** 🌟",
+            "Prefix_Art_style": "🎨 **Prefix_Art_style** 🎨",
+            "Prefix_Overall_effect": "🌈 **Prefix_Overall_effect** 🌈",
+            "Subject": "👩‍🎤 **Subject** 👩‍🎤",
+            "Scene_Background": "🌅 **Scene_Background** 🌅",
+            "Scene_Objects": "🪑 **Scene_Objects** 🪑",
+            "Scene_Prospect": "🔭 **Scene_Prospect** 🔭",
+            "Scene_Special_effects": "✨ **Scene_Special_effects** ✨",
+            "Uncategorized": "❓ **Uncategorized** ❓",
+        }
+
+        # 定义每个分类的项目颜文字
+        item_emojis = {
+            "Prefix_Quality": "✨",
+            "Prefix_Art_style": "🖌️",
+            "Prefix_Overall_effect": "💫",
+            "Subject": "🌸",
+            "Scene_Background": "🌟",
+            "Scene_Objects": "📦",
+            "Scene_Prospect": "👀",
+            "Scene_Special_effects": "🌞",
+            "Uncategorized": "❔",
+        }
+
+        if isinstance(positive_promt, list):
+            positive_promt = positive_promt[0]
+
+        if positive_promt_trans != None :
+            if isinstance(positive_promt_trans, list):
+                positive_promt_trans = positive_promt_trans[0]
+
+        formatted_output = []
+        formatted_output2 = []
+
+        # 遍历每个分类
+        if positive_promt_trans == None :
+            for category, items in positive_promt.items():
+                # 添加分类标题
+                formatted_output.append(category_emojis.get(category, f"**{category}**"))
+                formatted_output2.append(category_emojis.get(category, f"**{category}**"))
+                # 添加分类中的每个项目
+
+                formatted_output.extend(f"{item_emojis.get(category, '-')} - {item}" for item in items)
+                formatted_output2.append(", ".join(items))
+                formatted_output.append("")  # 添加空行分隔
+                formatted_output2.append("")  # 添加空行分隔
+        else :
+            categories = list(positive_promt.keys())
+                # 使用range遍历索引
+            for i in range(len(categories)):
+                category = categories[i]
+
+                # 添加分类标题
+                formatted_output.append(category_emojis.get(category, f"**{category}**"))
+                formatted_output2.append(category_emojis.get(category, f"**{category}**"))
+
+                # 添加原始内容项目
+                items = positive_promt[category]
+                items2 = positive_promt_trans[category]
+                if len(items) != len(items2):
+                    raise ValueError(f"Items and translations for category '{category}' do not match in length.")
+
+                for i in range(len(items)) :
+                    formatted_output.append(f"{item_emojis.get(category, '-')} - {items[i]} {items2[i]}")
+                formatted_output2.append(", ".join(items))
+                formatted_output2.append(", ".join(items2))
+
+                formatted_output.append("")  # 添加空行分隔
+                formatted_output2.append("")  # 添加空行分隔
+
+        return ("\n".join(formatted_output), "\n".join(formatted_output2))
+
 class NovelT5xxlPositivePromptNode:
     @classmethod
     def INPUT_TYPES(cls):
@@ -432,6 +530,7 @@ class NovelJoyCaptionTwoExtraOptionsNode(NovelPositivePromptCommonNode):
 
 NODE_CLASS_MAPPINGS = {
     "NovelPositivePromptNode": NovelPositivePromptNode,
+    "NovelPositivePromptShowNode": NovelPositivePromptShowNode,
     "NovelT5xxlPositivePromptNode": NovelT5xxlPositivePromptNode,
     "NovelHuyuanPromptNode": NovelHuyuanPromptNode,
     "NovelArtistTemplateSelectorNode": NovelArtistTemplateSelectorNode,
@@ -447,6 +546,7 @@ NODE_CLASS_MAPPINGS = {
 
 NODE_DISPLAY_NAME_MAPPINGS = {
     "NovelPositivePromptNode": "Smell Novel Positive Prompt",
+    "NovelPositivePromptShowNode": "Smell Novel Positive Prompt Show",
     "NovelT5xxlPositivePromptNode": "Smell Novel T5xxl Positive Prompt",
     "NovelHuyuanPromptNode": "Smell Novel Hunyuan Prompt",
     "NovelArtistTemplateSelectorNode": "Smell Novel Artist TemplateSelector Node",
