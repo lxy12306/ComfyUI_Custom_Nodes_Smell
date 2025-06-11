@@ -31,6 +31,40 @@ class NovelPositivePromptNode:
         concatenated_result = ", ".join(filter(None, components))
         return (concatenated_result,)
 
+class NovelIllustriousPositivePromptNode:
+    @classmethod
+    def INPUT_TYPES(cls):
+        return {
+            "required": {
+                "Persion_Count": ("STRING", {"tooltip": "Persion count(人物数量)", "multiline": False}),
+                "Character_Names": ("STRING", {"tooltip": "Character names(角色名字)", "multiline": True}),
+                "Rating": ("STRING", {"tooltip": "Rating(评分)", "multiline": False}),
+                "Prefix_Quality": ("STRING", {"tooltip": "Quality prefix input (质量前缀)", "multiline": True}),
+                "Prefix_Art_style": ("STRING", {"tooltip": "Art style prefix input (艺术风格)", "multiline": True}),
+                "Prefix_Overall_effect": ("STRING", {"tooltip": "Overall effect prefix input (整体效果)", "multiline": True}),
+                "Subject": ("STRING", {"tooltip": "Subject input (主体：可以是人也可以是场景特效等)", "multiline": True}),
+                "Scene_Background": ("STRING", {"tooltip": "Scene Background input (背景)", "multiline": True}),
+                "Scene_Objects": ("STRING", {"tooltip": "Scene Objects (其他非主体物品)", "multiline": True}),
+                "Scene_Prospect": ("STRING", {"tooltip": "Scene prospect input (前景)", "multiline": True}),
+                "Scene_Special_effects": ("STRING", {"tooltip": "Scene special effects input (特效)", "multiline": True}),
+                "Year_Modifier": ("STRING", {"tooltip": "Year modifier (年份修饰符)", "multiline": False}),
+            },
+        }
+
+    RETURN_TYPES = ("STRING",)
+    RETURN_NAMES = ("positive_promt",)
+    FUNCTION = "create_prompt"
+    CATEGORY = "🌱SmellCommon/NovelAI/Positive"
+    DESCRIPTION = "Create prompt strings for illustrious"
+
+    def create_prompt(self, Persion_Count, Character_Names, Rating, Prefix_Quality, Prefix_Art_style, Prefix_Overall_effect, Subject, Scene_Background, Scene_Objects, Scene_Prospect, Scene_Special_effects, Year_Modifier):
+
+        # 否则拼接输入字符串
+        components = [Prefix_Overall_effect, Subject, Scene_Background, Scene_Objects, Scene_Prospect, Scene_Special_effects]
+        general_tags = ", ".join(filter(None, components))
+        concatenated_result = " ||| ".join(filter(None, [Persion_Count, Character_Names, Rating, general_tags, Prefix_Art_style, Prefix_Quality, Year_Modifier]))
+        return (concatenated_result,)
+
 class NovelPositivePromptShowNode:
     @classmethod
     def INPUT_TYPES(cls):
@@ -65,6 +99,7 @@ class NovelPositivePromptShowNode:
             "Scene_Objects": "🪑 **Scene_Objects** 🪑",
             "Scene_Prospect": "🔭 **Scene_Prospect** 🔭",
             "Scene_Special_effects": "✨ **Scene_Special_effects** ✨",
+            "Year_Modifier": "📅 **Year_Modifier** 📅",
             "Uncategorized": "❓ **Uncategorized** ❓",
         }
 
@@ -78,6 +113,7 @@ class NovelPositivePromptShowNode:
             "Scene_Objects": "📦",
             "Scene_Prospect": "👀",
             "Scene_Special_effects": "🌞",
+            "Year_Modifier": "📅",
             "Uncategorized": "❔",
         }
 
@@ -315,7 +351,8 @@ class NovelArtistTemplateSelectorNode:
 
         return (current_prompt,)
 
-class NovelOverallEffectTemplateSelectorNode:
+
+class NovelOverallEffectTemplateSelectorNode(NovelPositivePromptCommonNode):
     @classmethod
     def INPUT_TYPES(cls):
         # 从已有提示词中生成下拉框选项
@@ -327,9 +364,11 @@ class NovelOverallEffectTemplateSelectorNode:
 
         return {
             "required": {
-                "selected_prompt1": (sorted(prompt_options), {"tooltip": "选择的提示词", "default": "None"}),
+                "user_prompt": ("STRING", {"tooltip": "添加的新提示词", "multiline": True}),
+                "use_template": ("BOOLEAN", {"default": True}),
             },
             "optional": {
+                "selected_prompt1": (sorted(prompt_options), {"tooltip": "选择的提示词", "default": "None"}),
                 "selected_prompt2": (sorted(prompt_options), {"tooltip": "选择的提示词", "default": "None"}),
                 "selected_prompt3": (sorted(prompt_options), {"tooltip": "选择的提示词", "default": "None"}),
                 "selected_prompt4": (sorted(prompt_options), {"tooltip": "选择的提示词", "default": "None"}),
@@ -340,61 +379,11 @@ class NovelOverallEffectTemplateSelectorNode:
         }
 
     RETURN_TYPES = ("STRING","STRING")
-    RETURN_NAMES = ("current_prompts","current_prompts_translation")
+    RETURN_NAMES = ("current_prompt","current_prompts_translation")
     FUNCTION = "process_prompts"
     CATEGORY = "🌱SmellCommon/NovelAI/Positive"
-    DESCRIPTION = "选择和添加提示词"
-
-    @classmethod
-    def load_prompts(cls):
-        return cls.prompt_manager.load_prompts()
-    @classmethod
-    def load_prompts_translation(cls):
-        return cls.prompt_manager.load_prompts_translation()
-
-    @classmethod
-    def save_prompts(cls, prompts):
-        cls.prompt_manager.save_prompts(prompts)
-
-    def process_prompts(self, selected_prompt1, selected_prompt2=None, selected_prompt3=None, selected_prompt4=None, selected_prompt5=None, new_prompt_title=None, new_prompt=None):
-        """处理输入并更新输出"""
-        prompts = self.load_prompts()
-        prompts_translation = self.load_prompts_translation()
-        # 选择提示词
-        selected_prompts = [selected_prompt1, selected_prompt2, selected_prompt3, selected_prompt4, selected_prompt5]
-        current_prompts = []
-        current_prompts_translation = []
-
-        # 遍历每个选择的提示
-        for selected_prompt in selected_prompts:
-            value = prompts.get(selected_prompt, None)  # 获取提示
-
-            if value is not None:  # 检查是否非空
-                current_prompts.append(value)
-                value2 = prompts_translation.get(selected_prompt, None)  # 获取提示
-                if value2 is not None:
-                    current_prompts_translation.append(value2)
-                else :
-                    current_prompts_translation.append(value)
-
-        print(current_prompts)
-
-        # 添加新提示词
-        if new_prompt and new_prompt_title:
-            # 生成新的键名
-            new_key = new_prompt_title  # 使用用户提供的标题作为键名
-            if new_key not in prompts:
-                prompts[new_key] = new_prompt
-                self.save_prompts(prompts)
-                print(f"已添加提示词: {new_prompt}，标题: {new_prompt_title}")
-                current_prompts.append(new_prompt)
-            else:
-                print(f"提示词标题 '{new_prompt_title}' 已存在。")
-
-        concatenated_result = ",".join(filter(None, current_prompts))
-        concatenated_result_translation = ",".join(filter(None, current_prompts_translation))
-        print(concatenated_result)
-        return (concatenated_result, concatenated_result_translation)
+    OUTPUT_NODE = True
+    DESCRIPTION = "选择和添加整体效果提示词"
 
 class NovelPositiveQualityTemplateSelectorNode(NovelPositivePromptCommonNode):
     @classmethod
@@ -530,6 +519,7 @@ class NovelJoyCaptionTwoExtraOptionsNode(NovelPositivePromptCommonNode):
 
 NODE_CLASS_MAPPINGS = {
     "NovelPositivePromptNode": NovelPositivePromptNode,
+    "NovelIllustriousPositivePromptNode": NovelIllustriousPositivePromptNode,
     "NovelPositivePromptShowNode": NovelPositivePromptShowNode,
     "NovelT5xxlPositivePromptNode": NovelT5xxlPositivePromptNode,
     "NovelHuyuanPromptNode": NovelHuyuanPromptNode,
@@ -546,6 +536,7 @@ NODE_CLASS_MAPPINGS = {
 
 NODE_DISPLAY_NAME_MAPPINGS = {
     "NovelPositivePromptNode": "Smell Novel Positive Prompt",
+    "NovelIllustriousPositivePromptNode": "Smell Novel Illustrious Positive Prompt",
     "NovelPositivePromptShowNode": "Smell Novel Positive Prompt Show",
     "NovelT5xxlPositivePromptNode": "Smell Novel T5xxl Positive Prompt",
     "NovelHuyuanPromptNode": "Smell Novel Hunyuan Prompt",
