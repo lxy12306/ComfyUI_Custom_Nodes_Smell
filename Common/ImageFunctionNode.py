@@ -22,6 +22,8 @@ from .libs.image_chooser_server import MessageHolder, Cancelled
 from .libs.image_function import *
 from .libs.os_function import *
 
+from .OpenPoseFunctionNode import MixOpenPoseNode
+
 
 def rescale(samples, width, height, algorithm: str):
     if algorithm == "bislerp":  # convert for compatibility with old workflows
@@ -1115,6 +1117,7 @@ NODE_CLASS_MAPPINGS = {
     "ImageAspectRatioAdjuster": ImageAspectRatioAdjuster,
     "ImageScaleByAspectRatio": ImageScaleByAspectRatio,
     "ImagePad": ImagePad,
+    "MixOpenPoseNode": MixOpenPoseNode,
 }
 
 NODE_DISPLAY_NAME_MAPPINGS = {
@@ -1127,4 +1130,5 @@ NODE_DISPLAY_NAME_MAPPINGS = {
     "ImageAspectRatioAdjuster": "Smell Image AspectRatio Adjuster",
     "ImageScaleByAspectRatio": "Smell Image Scale By AspectRatio",
     "ImagePad": "Smell Image Pad",
+    "MixOpenPoseNode": "Smell OpenPose Mix Node",
 }
