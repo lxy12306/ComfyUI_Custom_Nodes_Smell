@@ -92,14 +92,39 @@ class showAnything:
         else:
             return {"ui": {"text": values}, "result": (values,), }
 
+class StringListSelect:
+    @classmethod
+    def INPUT_TYPES(cls):
+        return {
+            "required": {
+                "text": ("STRING", {"forceInput": True}),
+                "index": ("INT", {"default": 0, "min": 0}),
+            }
+        }
+
+    RETURN_TYPES = ("STRING",)
+    RETURN_NAMES = ("result",)
+    FUNCTION = "select"
+    CATEGORY = "🌱SmellCommon/Logic"
+
+    def select(self, text, index):
+        # 从字符串列表中选择指定索引的元素
+        if not isinstance(text, list) or not text:
+            return (text,)
+        if index < 0 or index >= len(text):
+            return ("",)
+        return (text[index],)
+
 NODE_CLASS_MAPPINGS = {
     "IfAnyExecute": IfAnyExecute,
     "BOOL": BOOL,
-    "Smell_showAnything": showAnything
+    "Smell_showAnything": showAnything,
+    "StringListSelect": StringListSelect,
 }
 
 NODE_DISPLAY_NAME_MAPPINGS = {
     "IfAnyExecute": "Smell If Any Execute",
     "BOOL": "Smell Bool",
-    "Smell_showAnything": "Smell Show Anything"
+    "Smell_showAnything": "Smell Show Anything",
+    "StringListSelect": "Smell String List Select",
 }
