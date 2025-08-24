@@ -1,6 +1,7 @@
 numpy
 psutil
 ollama==0.4.7
+openai
 torch
 Pillow
 torchvision

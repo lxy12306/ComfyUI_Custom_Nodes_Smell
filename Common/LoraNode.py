@@ -10,7 +10,6 @@ from sympy import sequence
 from torch import mode
 from nodes import LoraLoader
 
-from ComfyUI_LayerStyle_Advance.py.local_groundingdino.util.utils import ModelEma
 from .libs.Efficiency import SequenceManager
 from .libs.DoublyLinkedList import DoublyLinkedList, DoublyLinkedListNode
 import threading

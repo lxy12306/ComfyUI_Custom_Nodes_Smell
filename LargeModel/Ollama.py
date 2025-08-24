@@ -547,19 +547,3 @@ format: {format}
                 print("saving context to node memory.")
 
         return response['response'], response['context'], meta,
-
-NODE_CLASS_MAPPINGS = {
-    "OllamaVisionSimple": OllamaVisionSimple,
-    "OllamaGenerateSimple": OllamaGenerateSimple,
-    "OllamaConnectivity" : OllamaConnectivity,
-    "OllamaOptionsAdvance" : OllamaOptionsAdvance,
-    "OllamaGenerateAdvance" : OllamaGenerateAdvance
-}
-
-NODE_DISPLAY_NAME_MAPPINGS = {
-    "OllamaVisionSimple" : "Smell Ollama Vision Simple",
-    "OllamaGenerateSimple" : "Smell Ollama Generate Simple",
-    "OllamaConnectivity" : "Smell Ollama Connectivity",
-    "OllamaOptionsAdvance" : "Smell Ollama Options Advance",
-    "OllamaGenerateAdvance" : "Smell Ollama Generate Advance"
-}
