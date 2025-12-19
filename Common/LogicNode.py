@@ -2,7 +2,10 @@ from .libs.util import *
 from .libs.function import *
 import json
 
+MAX_FLOW_NUM = 20
+
 any_type = AlwaysEqualProxy("*")
+lazy_options = {"lazy": True} if compare_revision(2543) else {}
 
 class IfAnyExecute:
     """
@@ -115,11 +118,44 @@ class StringListSelect:
             return ("",)
         return (text[index],)
 
+class anythingIndexSwitch:
+    def __init__(self):
+        pass
+
+    @classmethod
+    def INPUT_TYPES(cls):
+        inputs = {
+            "required": {
+                "index": ("INT", {"default": 0, "min": 0, "max": 9, "step": 1}),
+            },
+            "optional": {
+            }
+        }
+        for i in range(MAX_FLOW_NUM):
+            inputs["optional"]["value%d" % i] = (any_type, lazy_options)
+        return inputs
+
+    RETURN_TYPES = (any_type,)
+    RETURN_NAMES = ("value",)
+    FUNCTION = "index_switch"
+
+    CATEGORY = "🌱SmellCommon/Logic"
+
+    def check_lazy_status(self, index, **kwargs):
+        key = "value%d" % index
+        if kwargs.get(key, None) is None:
+            return [key]
+
+    def index_switch(self, index, **kwargs):
+        key = "value%d" % index
+        return (kwargs[key],)
+
 NODE_CLASS_MAPPINGS = {
     "IfAnyExecute": IfAnyExecute,
     "BOOL": BOOL,
     "Smell_showAnything": showAnything,
     "StringListSelect": StringListSelect,
+    "anythingIndexSwitch": anythingIndexSwitch,
 }
 
 NODE_DISPLAY_NAME_MAPPINGS = {
@@ -127,4 +163,5 @@ NODE_DISPLAY_NAME_MAPPINGS = {
     "BOOL": "Smell Bool",
     "Smell_showAnything": "Smell Show Anything",
     "StringListSelect": "Smell String List Select",
+    "anythingIndexSwitch": "Smell Anything Index Switch",
 }
