@@ -47,8 +47,6 @@ def is_folder_open(directory):
     return False
 
 
-
-
 class ImageChooser(PreviewImage):
     @classmethod
     def INPUT_TYPES(self):
@@ -673,9 +671,14 @@ class ImageSaver:
 
             if (OpenOutputDirectory):
                 try:
-                    os.system(f'explorer "{Directory}"')
-                    os.system(f'open "{Directory}"')
-                    os.system(f'xdg-open "{Directory}"')
+                    abs_path = os.path.abspath(Directory)
+                    if not is_folder_open(abs_path):
+                        if hasattr(os, 'startfile'):
+                            os.startfile(abs_path)
+                        else:
+                            os.system(f'explorer "{abs_path}"')
+                            os.system(f'open "{abs_path}"')
+                            os.system(f'xdg-open "{abs_path}"')
                 except Exception as e:
                     print(f"Error opening directory: {e}")
 
@@ -761,9 +764,14 @@ class ImageSwitchSaver:
             if (OpenOutputDirectory):
                 smell_debug(f"OpenOutputDirectory OpenOutputDirectoryOpenOutputDirectoryOpenOutputDirectoryOpenOutputDirectoryOpenOutputDirectory {Directory}")
                 try:
-                    os.system(f'explorer "{Directory}"')
-                    os.system(f'open "{Directory}"')
-                    os.system(f'xdg-open "{Directory}"')
+                    abs_path = os.path.abspath(Directory)
+                    if not is_folder_open(abs_path):
+                        if hasattr(os, 'startfile'):
+                            os.startfile(abs_path)
+                        else:
+                            os.system(f'explorer "{abs_path}"')
+                            os.system(f'open "{abs_path}"')
+                            os.system(f'xdg-open "{abs_path}"')
                 except Exception as e:
                     print(f"Error opening directory: {e}")
 
